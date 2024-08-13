@@ -16,7 +16,7 @@ public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T> w
         builder.Property(x => x.AtualizadoEm)
             .ValueGeneratedOnUpdate();
         builder.Property(x => x.Numero)
-            .ValueGeneratedOnAdd();
+            .IsRequired();
         builder.HasIndex(x => x.Numero);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Adm.Company.Application.Hubs;
-using Adm.Company.Domain.Interfaces;
+using Adm.Company.Domain.Enums;
 using Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -20,9 +20,9 @@ public class WebHookWhatsController : ControllerBase
     [HttpPost("qrcode-updated")]
     public async Task<IActionResult> QrCodeupdate([FromBody] UpdateQrCodeWebHookRequest body)
     {
-        await _hubContext.Clients.All.SendAsync("UpdateQrCode", new {
+        await _hubContext.Clients.All.SendAsync(nameof(EnumHub.UpdateQrCode), new {
             qrCode = body.Data.Qrcode,
-            cpf = body.Instance
+            whatsApp = body.Instance
         });
         return Ok();
     }
@@ -32,10 +32,10 @@ public class WebHookWhatsController : ControllerBase
     {
         if(body != null && body.Data != null)
         {
-            await _hubContext.Clients.All.SendAsync("Connecting", new
+            await _hubContext.Clients.All.SendAsync(nameof(EnumHub.Conexao), new
             {
                 status = body.Data.StatusReason,
-                cpf = body.Instance
+                whatsApp = body.Instance
             });
         }
         return Ok();

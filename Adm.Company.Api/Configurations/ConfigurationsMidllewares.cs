@@ -8,5 +8,6 @@ public static class ConfigurationsMidllewares
     {
         app.UseMiddleware<LogMiddleware>();
         app.UseMiddleware<AutenticaUsuarioMidlleware>();
+        app.UseMiddleware<AutenticaEmpresaMidlleware>();
     }
 }

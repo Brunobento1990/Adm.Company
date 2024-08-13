@@ -60,14 +60,18 @@ public class AutenticaUsuarioMidlleware
             var id = jwtToken.Claims.FirstOrDefault(c => c.Type == "Id")?.Value
                 ?? throw new ExceptionApiUnauthorized("Token inválido");
             var cpf = jwtToken.Claims.FirstOrDefault(c => c.Type == "Cpf")?.Value;
+            var empresaId = jwtToken.Claims.FirstOrDefault(c => c.Type == "EmpresaId")?.Value;
 
-            if (!Guid.TryParse(id, out Guid idParse) || string.IsNullOrWhiteSpace(cpf))
+            if (!Guid.TryParse(id, out Guid idParse) 
+                || string.IsNullOrWhiteSpace(cpf) ||
+                !Guid.TryParse(empresaId, out Guid empresaIdParse))
             {
                 throw new ExceptionApiUnauthorized("Por favor, efetue o login novamente");
             }
 
             usuarioAutenticado.Id = idParse;
             usuarioAutenticado.Cpf = cpf;
+            usuarioAutenticado.EmpresaId = empresaIdParse;
 
         }
         catch (SecurityTokenExpiredException)

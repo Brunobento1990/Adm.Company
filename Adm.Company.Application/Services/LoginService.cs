@@ -11,11 +11,13 @@ public sealed class LoginService : ILoginService
 {
     private readonly ILoginUsuarioRepository _loginUsuarioRepository;
     private readonly ITokenService _tokenService;
+    private readonly IConfiguracaoAtendimentoEmpresaRepository _configuracaoAtendimentoEmpresaRepository;
 
-    public LoginService(ILoginUsuarioRepository loginUsuarioRepository, ITokenService tokenService)
+    public LoginService(ILoginUsuarioRepository loginUsuarioRepository, ITokenService tokenService, IConfiguracaoAtendimentoEmpresaRepository configuracaoAtendimentoEmpresaRepository)
     {
         _loginUsuarioRepository = loginUsuarioRepository;
         _tokenService = tokenService;
+        _configuracaoAtendimentoEmpresaRepository = configuracaoAtendimentoEmpresaRepository;
     }
 
     public async Task<LoginViewModel> LoginAsync(LoginUsuarioDto loginUsuarioDto)
@@ -30,10 +32,14 @@ public sealed class LoginService : ILoginService
             throw new ExceptionApiUnauthorized("Usuário bloqueado!");
         }
 
+        var configuracaoAtendimento = await _configuracaoAtendimentoEmpresaRepository
+            .GetConfiguracaoAtendimentoEmpresaByEmpresaIdAsync(usuario.EmpresaId);
+
         return new LoginViewModel()
         {
             Token = _tokenService.GetToken(usuario),
-            Usuario = (UsuarioViewModel)usuario
+            Usuario = (UsuarioViewModel)usuario,
+            ConfiguracaoAtendimentoEmpresa = configuracaoAtendimento != null ? (ConfiguracaoAtendimentoEmpresaViewModel)configuracaoAtendimento : null
         };
     }
 }

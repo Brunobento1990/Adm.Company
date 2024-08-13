@@ -16,7 +16,7 @@ public abstract class BasePessoaConfiguration<T> : IEntityTypeConfiguration<T> w
         builder.Property(x => x.AtualizadoEm)
             .ValueGeneratedOnUpdate();
         builder.Property(x => x.Numero)
-            .ValueGeneratedOnAdd();
+            .IsRequired();
 
         builder.Property(x => x.Cpf)
             .IsRequired()

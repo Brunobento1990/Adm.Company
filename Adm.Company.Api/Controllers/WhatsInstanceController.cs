@@ -1,5 +1,7 @@
 ﻿using Adm.Company.Api.Attributes;
 using Adm.Company.Application.Interfaces;
+using Adm.Company.Application.ViewModel;
+using Adm.Company.Application.ViewModel.WhatsApi;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Adm.Company.Api.Controllers;
@@ -18,13 +20,19 @@ public class WhatsInstanceController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType<ConnectInstanceViewModel>(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
+    [ProducesResponseType<ErrorResponse>(400)]
     public async Task<IActionResult> Instance()
     {
         var response = await _whatsServiceInstanceService.ConnectInstanceAsync();
         return Ok(response);
     }
 
-    [HttpGet("perfil")]
+    [HttpGet("iniciar-whats")]
+    [ProducesResponseType<IniciarWhatsViewModel>(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
+    [ProducesResponseType<ErrorResponse>(400)]
     public async Task<IActionResult> Perfil()
     {
         var response = await _whatsServiceInstanceService.GetPerfilAsync();

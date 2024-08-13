@@ -5,5 +5,5 @@ namespace Adm.Company.Application.Interfaces;
 public interface IWhatsServiceInstanceService
 {
     Task<ConnectInstanceViewModel?> ConnectInstanceAsync();
-    Task<PerfilWhatsViewModel> GetPerfilAsync();
+    Task<IniciarWhatsViewModel> GetPerfilAsync();
 }

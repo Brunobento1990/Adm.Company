@@ -1,6 +1,7 @@
 ﻿using Adm.Company.Infrastructure.HttpServices.Interfaces;
 using Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
 using Adm.Company.Infrastructure.HttpServices.Responses.WhatsApi;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -72,5 +73,21 @@ public sealed class WhatsHttpService : IWhatsHttpService
             return null;
         }
         return JsonSerializer.Deserialize<FetchInstanceResponse>(body, _options);
+    }
+
+    public async Task<IList<ContatoResponse>> GetContatosAsync(string instanceName)
+    {
+        var client = _httpClientFactory.CreateClient("WHATS");
+        var response = await client.PostAsync($"chat/findContacts/{instanceName}", new StringContent(
+                JsonSerializer.Serialize(new { }),
+                Encoding.UTF8,
+                "application/json"));
+        var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Erro evolution api: {body}");
+            return [];
+        }
+        return JsonSerializer.Deserialize<IList<ContatoResponse>>(body, _options) ?? [];
     }
 }

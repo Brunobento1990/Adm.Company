@@ -13,6 +13,7 @@ public static class ContextDependencyInject
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         services.AddDbContext<AdmCompanyContext>(opt => opt.UseNpgsql(connectionString));
         services.AddScoped<IUsuarioAutenticado, UsuarioAutenticado>();
+        services.AddScoped<IEmpresaAutenticada, EmpresaAutenticada>();
 
         return services;
     }
