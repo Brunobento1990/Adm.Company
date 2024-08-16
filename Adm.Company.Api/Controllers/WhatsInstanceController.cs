@@ -28,14 +28,4 @@ public class WhatsInstanceController : ControllerBase
         var response = await _whatsServiceInstanceService.ConnectInstanceAsync();
         return Ok(response);
     }
-
-    [HttpGet("iniciar-whats")]
-    [ProducesResponseType<IniciarWhatsViewModel>(200)]
-    [ProducesResponseType<ErrorResponse>(401)]
-    [ProducesResponseType<ErrorResponse>(400)]
-    public async Task<IActionResult> Perfil()
-    {
-        var response = await _whatsServiceInstanceService.GetPerfilAsync();
-        return Ok(response);
-    }
 }

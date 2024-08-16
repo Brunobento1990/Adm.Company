@@ -5,4 +5,5 @@ namespace Adm.Company.Domain.Interfaces;
 public interface IConfiguracaoAtendimentoEmpresaRepository
 {
     Task<ConfiguracaoAtendimentoEmpresa?> GetConfiguracaoAtendimentoEmpresaByEmpresaIdAsync(Guid empresaId);
+    Task<ConfiguracaoAtendimentoEmpresa?> GetConfiguracaoAtendimentoEmpresaByNumeroWhtasAsync(string numeroWhats);
 }

@@ -3,5 +3,6 @@
 public enum EnumHub
 {
     UpdateQrCode,
-    Conexao
+    Conexao,
+    NovoAtendimento
 }

@@ -6,6 +6,6 @@ public static class ConfigurationsHub
 {
     public static void AddHubs(this WebApplication app)
     {
-        app.MapHub<QrCodeUpdateWhatsHub>("/whats");
+        app.MapHub<WhatsHub>("/whats");
     }
 }

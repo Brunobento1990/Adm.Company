@@ -72,32 +72,4 @@ public sealed class WhatsServiceInstanceService : IWhatsServiceInstanceService
 
         return null;
     }
-
-    public async Task<IniciarWhatsViewModel> GetPerfilAsync()
-    {
-        var configuracaoWhats = await GetConfiguracaoAtendimentoEmpresaAsync();
-        var perfil = await _whatsHttpService.FetchInstanceAsync(configuracaoWhats.WhatsApp)
-            ?? throw new ExceptionApiErro("Não foi possível obter seu perfil do whtas!");
-        var contatos = await _whatsHttpService.GetContatosAsync(configuracaoWhats.WhatsApp);
-
-        var perfilViewModel = new PerfilWhatsViewModel()
-        {
-            Foto = perfil.Instance.ProfilePictureUrl,
-            Nome = perfil.Instance.ProfileName
-        };
-
-        var contatosViewModel = contatos.Select(x => new ContatoWhatsViewModel()
-        {
-            Foto = x.ProfilePictureUrl,
-            Id = x.Id,
-            Nome = x.PushName,
-            Numero = x.Owner
-        }).ToList();
-
-        return new IniciarWhatsViewModel()
-        {
-            Contatos = contatosViewModel,
-            Perfil = perfilViewModel
-        };
-    }
 }

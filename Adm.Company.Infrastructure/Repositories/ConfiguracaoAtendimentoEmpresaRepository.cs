@@ -23,4 +23,12 @@ public sealed class ConfiguracaoAtendimentoEmpresaRepository : IConfiguracaoAten
             .FirstOrDefaultAsync(x => x.EmpresaId == empresaId);
             
     }
+
+    public async Task<ConfiguracaoAtendimentoEmpresa?> GetConfiguracaoAtendimentoEmpresaByNumeroWhtasAsync(string numeroWhats)
+    {
+        return await _admCompanyContext
+            .ConfiguracaoAtendimentoEmpresa
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.WhatsApp ==  numeroWhats);
+    }
 }
