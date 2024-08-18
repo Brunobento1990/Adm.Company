@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Text;
+using Adm.Company.Infrastructure.HttpServices.Responses;
 
 namespace Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
 
@@ -12,11 +13,7 @@ public class CreateInstanceResponse
 
     public StringContent ToJson()
     {
-        var json = JsonSerializer.Serialize(this, new JsonSerializerOptions()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true,
-        });
+        var json = JsonSerializer.Serialize(this, JsonOptionsModel.Options);
 
         return new StringContent(
                 json,

@@ -12,6 +12,8 @@ public static class RepositoriesDependencyInject
         services.AddScoped<IEmpresaRepository, EmpresaRepository>();
         services.AddScoped<IConfiguracaoAtendimentoEmpresaRepository, ConfiguracaoAtendimentoEmpresaRepository>();
         services.AddScoped<IAtendimentoRepository, AtendimentoRepository>();
+        services.AddScoped<IClienteRepository, ClienteRepository>();
+        services.AddScoped<IMensagemAtendimentoRepository, MensagemAtendimentoRepository>();
 
         return services;
     }

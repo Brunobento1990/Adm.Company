@@ -11,5 +11,6 @@ public class MensagemAtendimentoConfiguration : BaseEntityConfiguration<Mensagem
 
         builder.Property(x => x.Status).IsRequired();
         builder.Property(x => x.Mensagem).IsRequired().HasMaxLength(5000);
+        builder.Property(x => x.TipoMensagem).IsRequired().HasMaxLength(255);
     }
 }

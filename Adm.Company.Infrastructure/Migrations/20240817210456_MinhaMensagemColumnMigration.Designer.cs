@@ -3,6 +3,7 @@ using System;
 using Adm.Company.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Adm.Company.Infrastructure.Migrations
 {
     [DbContext(typeof(AdmCompanyContext))]
-    partial class AdmCompanyContextModelSnapshot : ModelSnapshot
+    [Migration("20240817210456_MinhaMensagemColumnMigration")]
+    partial class MinhaMensagemColumnMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +35,6 @@ namespace Adm.Company.Infrastructure.Migrations
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("ClienteId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CriadoEm")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
@@ -49,6 +49,11 @@ namespace Adm.Company.Infrastructure.Migrations
 
                     b.Property<long>("Numero")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("NumeroWhats")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("Observacao")
                         .HasMaxLength(255)
@@ -65,11 +70,11 @@ namespace Adm.Company.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClienteId");
-
                     b.HasIndex("EmpresaId");
 
                     b.HasIndex("Numero");
+
+                    b.HasIndex("NumeroWhats");
 
                     b.HasIndex("Status");
 
@@ -78,71 +83,6 @@ namespace Adm.Company.Infrastructure.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Atendimentos");
-                });
-
-            modelBuilder.Entity("Adm.Company.Domain.Entities.Cliente", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("AtualizadoEm")
-                        .ValueGeneratedOnUpdate()
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Cpf")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<Guid>("EmpresaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Foto")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<long>("Numero")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("RemoteJid")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("WhatsApp")
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Cpf");
-
-                    b.HasIndex("Email");
-
-                    b.HasIndex("EmpresaId");
-
-                    b.HasIndex("Numero");
-
-                    b.HasIndex("RemoteJid");
-
-                    b.HasIndex("WhatsApp");
-
-                    b.ToTable("Clientes");
                 });
 
             modelBuilder.Entity("Adm.Company.Domain.Entities.ConfiguracaoAtendimentoEmpresa", b =>
@@ -331,12 +271,6 @@ namespace Adm.Company.Infrastructure.Migrations
 
             modelBuilder.Entity("Adm.Company.Domain.Entities.Atendimento", b =>
                 {
-                    b.HasOne("Adm.Company.Domain.Entities.Cliente", "Cliente")
-                        .WithMany("Atendimentos")
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Adm.Company.Domain.Entities.Empresa", "Empresa")
                         .WithMany()
                         .HasForeignKey("EmpresaId")
@@ -351,24 +285,11 @@ namespace Adm.Company.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("UsuarioId");
 
-                    b.Navigation("Cliente");
-
                     b.Navigation("Empresa");
 
                     b.Navigation("Usuario");
 
                     b.Navigation("UsuarioCancelamento");
-                });
-
-            modelBuilder.Entity("Adm.Company.Domain.Entities.Cliente", b =>
-                {
-                    b.HasOne("Adm.Company.Domain.Entities.Empresa", "Empresa")
-                        .WithMany()
-                        .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Empresa");
                 });
 
             modelBuilder.Entity("Adm.Company.Domain.Entities.ConfiguracaoAtendimentoEmpresa", b =>
@@ -407,11 +328,6 @@ namespace Adm.Company.Infrastructure.Migrations
             modelBuilder.Entity("Adm.Company.Domain.Entities.Atendimento", b =>
                 {
                     b.Navigation("Mensagens");
-                });
-
-            modelBuilder.Entity("Adm.Company.Domain.Entities.Cliente", b =>
-                {
-                    b.Navigation("Atendimentos");
                 });
 
             modelBuilder.Entity("Adm.Company.Domain.Entities.Empresa", b =>

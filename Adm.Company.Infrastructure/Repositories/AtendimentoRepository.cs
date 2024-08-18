@@ -21,12 +21,39 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
         await _admCompanyContext.SaveChangesAsync();
     }
 
-    public async Task<Atendimento?> GetAtendimentoByStatusAsync(StatusAtendimento statusAtendimento, string numeroWhats, Guid empresaId)
+    public async Task<Atendimento?> GetAtendimentoByStatusAsync(
+        StatusAtendimento statusAtendimento, 
+        string numeroWhats, 
+        Guid empresaId)
     {
         return await _admCompanyContext
             .Atendimentos
             .AsNoTracking()
             .Include(x => x.Mensagens)
-            .FirstOrDefaultAsync(x => x.Status == statusAtendimento && x.NumeroWhats == numeroWhats && x.EmpresaId == empresaId);
+            .Include(x => x.Cliente)
+            .FirstOrDefaultAsync(x => x.Status == statusAtendimento && x.Cliente.RemoteJid == numeroWhats && x.EmpresaId == empresaId);
+    }
+
+    public async Task<Atendimento?> GetByIdAsync(Guid id)
+    {
+        return await _admCompanyContext
+            .Atendimentos
+            .AsNoTracking()
+            .Include(x => x.Cliente)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public async Task<IList<Atendimento>> GetMeuAtendimentosAsync(
+        Guid usuarioId, 
+        Guid empresaId, 
+        StatusAtendimento statusAtendimento)
+    {
+        return await _admCompanyContext
+            .Atendimentos
+            .AsNoTracking()
+            .Include(x => x.Mensagens)
+            .Include(x => x.Cliente)
+            .Where(x => x.UsuarioId == usuarioId && x.EmpresaId == empresaId)
+            .ToListAsync();
     }
 }

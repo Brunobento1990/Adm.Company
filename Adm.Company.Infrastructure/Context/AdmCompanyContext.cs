@@ -15,6 +15,7 @@ public class AdmCompanyContext : DbContext
     public DbSet<ConfiguracaoAtendimentoEmpresa> ConfiguracaoAtendimentoEmpresa {  get; set; }
     public DbSet<Atendimento> Atendimentos { get; set; }
     public DbSet<MensagemAtendimento> MensagemAtendimentos { get; set; }
+    public DbSet<Cliente> Clientes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

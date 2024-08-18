@@ -15,7 +15,7 @@ public sealed class Atendimento : BaseEntityEmpresa
         Guid? usuarioCancelamentoId,
         string? observacao,
         string? mensagemCancelamento,
-        string numeroWhats)
+        Guid clienteId)
             : base(id, criadoEm, atualizadoEm, numero, empresaId)
     {
         Status = status;
@@ -23,7 +23,7 @@ public sealed class Atendimento : BaseEntityEmpresa
         UsuarioCancelamentoId = usuarioCancelamentoId;
         Observacao = observacao;
         MensagemCancelamento = mensagemCancelamento;
-        NumeroWhats = numeroWhats;
+        ClienteId = clienteId;
     }
 
     public StatusAtendimento Status { get; private set; }
@@ -33,12 +33,19 @@ public sealed class Atendimento : BaseEntityEmpresa
     public Usuario? UsuarioCancelamento { get; set; }
     public string? Observacao { get; private set; }
     public string? MensagemCancelamento { get; private set; }
-    public string NumeroWhats { get; set; }
     public IList<MensagemAtendimento> Mensagens { get; set; } = [];
+    public Guid ClienteId { get; private set; }
+    public Cliente Cliente { get; set; } = null!;
 
     public static class Factorie
     {
-        public static Atendimento Iniciar(string numeroWhats, string mensagem, Guid empresaId)
+        public static Atendimento Iniciar(
+            string mensagem, 
+            Guid empresaId, 
+            string tipoMensagem, 
+            string remoteId,
+            bool minhaMensagem,
+            Guid clienteId)
         {
             var atendimento = new Atendimento(
                 id: Guid.NewGuid(),
@@ -51,7 +58,7 @@ public sealed class Atendimento : BaseEntityEmpresa
                 usuarioCancelamentoId: null,
                 observacao: null,
                 mensagemCancelamento: null,
-                numeroWhats: numeroWhats);
+                clienteId: clienteId);
 
             atendimento.Mensagens.Add(new MensagemAtendimento(
                 id: Guid.NewGuid(),
@@ -59,7 +66,11 @@ public sealed class Atendimento : BaseEntityEmpresa
                 atualizadoEm: DateTime.Now,
                 numero: 0,
                 mensagem: mensagem,
-                atendimentoId: atendimento.Id));
+                status: StatusMensagem.Entregue,
+                atendimentoId: atendimento.Id,
+                tipoMensagem: tipoMensagem,
+                remoteId: remoteId,
+                minhaMensagem: minhaMensagem));
 
             return atendimento;
         }

@@ -13,9 +13,7 @@ public sealed class AtendimentoConfiguration : BaseEntityConfiguration<Atendimen
         builder.Property(x => x.Status).IsRequired();
         builder.Property(x => x.Observacao).HasMaxLength(255);
         builder.Property(x => x.MensagemCancelamento).HasMaxLength(255);
-        builder.Property(x => x.NumeroWhats).IsRequired().HasMaxLength(255);
 
-        builder.HasIndex(x => x.NumeroWhats);
         builder.HasIndex(x => x.Status);
 
         builder.HasMany(x => x.Mensagens)

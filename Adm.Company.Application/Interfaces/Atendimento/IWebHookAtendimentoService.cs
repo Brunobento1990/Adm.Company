@@ -2,5 +2,5 @@
 
 public interface IWebHookAtendimentoService
 {
-    Task CreateOrUpdateAtendimentoWebHookAsync(string mensagem, string numeroWhatsEmpresa, string numeroWhatsOrigem);
+    Task CreateOrUpdateAtendimentoWebHookAsync(string mensagem, string numeroWhatsEmpresa, string numeroWhatsOrigem, string remoteId, string tipoMensagem, string nome);
 }

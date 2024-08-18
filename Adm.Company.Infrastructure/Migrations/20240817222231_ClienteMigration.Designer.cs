@@ -3,6 +3,7 @@ using System;
 using Adm.Company.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Adm.Company.Infrastructure.Migrations
 {
     [DbContext(typeof(AdmCompanyContext))]
-    partial class AdmCompanyContextModelSnapshot : ModelSnapshot
+    [Migration("20240817222231_ClienteMigration")]
+    partial class ClienteMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,17 +115,8 @@ namespace Adm.Company.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
                     b.Property<long>("Numero")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("RemoteJid")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("WhatsApp")
                         .HasMaxLength(13)
@@ -137,8 +131,6 @@ namespace Adm.Company.Infrastructure.Migrations
                     b.HasIndex("EmpresaId");
 
                     b.HasIndex("Numero");
-
-                    b.HasIndex("RemoteJid");
 
                     b.HasIndex("WhatsApp");
 
