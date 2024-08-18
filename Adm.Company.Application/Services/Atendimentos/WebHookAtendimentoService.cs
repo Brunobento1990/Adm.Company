@@ -49,7 +49,8 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
 
         if (atendimento == null)
         {
-            var cliente = await _clienteRepository.GetByNumeroWhatsAsync(numeroWhatsOrigem);
+            var numeroWhatsTratado = ConvertWhatsHelpers.ConvertRemoteJidWhats(numeroWhatsOrigem);
+            var cliente = await _clienteRepository.GetByNumeroWhatsAsync(numeroWhatsTratado);
 
             if (cliente == null)
             {
@@ -60,7 +61,7 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
                     numero: 0,
                     empresaId: configuracaoAtendimento.EmpresaId,
                     cpf: "sem CPF",
-                    whatsApp: ConvertWhatsHelpers.ConvertRemoteJidWhats(numeroWhatsOrigem),
+                    whatsApp: numeroWhatsTratado,
                     email: "sem email",
                     foto: null,
                     nome: nome.Length > 255 ? nome[..255] : nome,
