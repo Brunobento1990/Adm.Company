@@ -48,12 +48,22 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
         Guid empresaId, 
         StatusAtendimento statusAtendimento)
     {
-        return await _admCompanyContext
+        var result = await _admCompanyContext
             .Atendimentos
             .AsNoTracking()
-            .Include(x => x.Mensagens)
             .Include(x => x.Cliente)
             .Where(x => x.UsuarioId == usuarioId && x.EmpresaId == empresaId)
-            .ToListAsync();
+            .Select(x => new
+            {
+                Atendimento = x,
+                Mensagens = x.Mensagens.OrderByDescending(x => x.CriadoEm).Take(1).ToList()
+            }).ToListAsync();
+
+        return result.Select(x =>
+        {
+            var atendimento = x.Atendimento;
+            atendimento.Mensagens = x.Mensagens;
+            return atendimento;
+        }).ToList();
     }
 }

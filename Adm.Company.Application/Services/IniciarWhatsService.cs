@@ -1,4 +1,5 @@
 ﻿using Adm.Company.Application.Interfaces;
+using Adm.Company.Application.Interfaces.Atendimento;
 using Adm.Company.Application.ViewModel.WhatsApi;
 using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Exceptions;
@@ -12,15 +13,18 @@ public sealed class IniciarWhatsService : IIniciarWhatsService
     private readonly IChatWhatsHttpService _chatWhatsHttpService;
     private readonly IConfiguracaoAtendimentoEmpresaRepository _configuracaoAtendimentoEmpresaRepository;
     private readonly IEmpresaAutenticada _empresaAutenticada;
+    private readonly IAtendimentoService _atendimentoService;
 
     public IniciarWhatsService(
         IChatWhatsHttpService chatWhatsHttpService,
         IConfiguracaoAtendimentoEmpresaRepository configuracaoAtendimentoEmpresaRepository,
-        IEmpresaAutenticada empresaAutenticada)
+        IEmpresaAutenticada empresaAutenticada,
+        IAtendimentoService atendimentoService)
     {
         _chatWhatsHttpService = chatWhatsHttpService;
         _configuracaoAtendimentoEmpresaRepository = configuracaoAtendimentoEmpresaRepository;
         _empresaAutenticada = empresaAutenticada;
+        _atendimentoService = atendimentoService;
     }
 
     public async Task<IniciarWhatsViewModel> GetPerfilAsync()
@@ -44,10 +48,13 @@ public sealed class IniciarWhatsService : IIniciarWhatsService
             Numero = x.Owner
         }).ToList();
 
+        var atendimentos = await _atendimentoService.MeusAtendimentosAsync();
+
         return new IniciarWhatsViewModel()
         {
             Contatos = contatosViewModel,
-            Perfil = perfilViewModel
+            Perfil = perfilViewModel,
+            Atendimentos = atendimentos
         };
     }
 
