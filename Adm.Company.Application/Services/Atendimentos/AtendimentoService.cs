@@ -13,17 +13,20 @@ public sealed class AtendimentoService : IAtendimentoService
     private readonly IAtendimentoRepository _atendimentoRepository;
     private readonly IChatWhatsHttpService _chatWhatsHttpService;
     private readonly IConfiguracaoAtendimentoEmpresaRepository _configuracaoAtendimentoEmpresaRepository;
+    private readonly IMensagemAtendimentoRepository _mensagemAtendimentoRepository;
 
     public AtendimentoService(
         IUsuarioAutenticado usuarioAutenticado,
         IAtendimentoRepository atendimentoRepository,
         IChatWhatsHttpService chatWhatsHttpService,
-        IConfiguracaoAtendimentoEmpresaRepository configuracaoAtendimentoEmpresaRepository)
+        IConfiguracaoAtendimentoEmpresaRepository configuracaoAtendimentoEmpresaRepository,
+        IMensagemAtendimentoRepository mensagemAtendimentoRepository)
     {
         _usuarioAutenticado = usuarioAutenticado;
         _atendimentoRepository = atendimentoRepository;
         _chatWhatsHttpService = chatWhatsHttpService;
         _configuracaoAtendimentoEmpresaRepository = configuracaoAtendimentoEmpresaRepository;
+        _mensagemAtendimentoRepository = mensagemAtendimentoRepository;
     }
 
     public async Task<IList<AtendimentoViewModel>> MeusAtendimentosAsync()
@@ -47,6 +50,10 @@ public sealed class AtendimentoService : IAtendimentoService
 
                 atendimentoViewModel.Cliente.Foto = responsePerfil?.ProfilePictureUrl;
             }
+
+            atendimentoViewModel.MensagensNaoLidas = await _mensagemAtendimentoRepository
+                .MensagensNaoLidasAtendimentoAsync(atendimentoViewModel.Id);
+
             atendimentosViewModel.Add(atendimentoViewModel);
         }
 

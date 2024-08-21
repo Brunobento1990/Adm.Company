@@ -18,6 +18,7 @@ public static class ServicesDependencyInject
         services.AddScoped<IAtendimentoService, AtendimentoService>();
         services.AddScoped<IEnviarMensagemAtendimentoService, EnviarMensagemAtendimentoService>();
         services.AddScoped<IAtualizarMensagemAtendimentoService, AtualizarMensagemAtendimentoService>();
+        services.AddScoped<IMensagemAtendimentoService, MensagemAtendimentoService>();
 
         return services;
     }

@@ -14,6 +14,7 @@ public class AtendimentoViewModel : BaseViewModel
     public string? MensagemCancelamento { get; set; }
     public List<MensagemAtendimentoViewModel> Mensagens { get; set; } = [];
     public ClienteViewModel Cliente { get; set; } = null!;
+    public int MensagensNaoLidas { get; set; }
 
     public static explicit operator AtendimentoViewModel(Atendimento atendimento)
     {

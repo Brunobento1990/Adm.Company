@@ -51,6 +51,8 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
         var result = await _admCompanyContext
             .Atendimentos
             .AsNoTracking()
+            .OrderByDescending(x => x.AtualizadoEm)
+                .ThenByDescending(x => x.CriadoEm)
             .Include(x => x.Cliente)
             .Where(x => x.UsuarioId == usuarioId && x.EmpresaId == empresaId)
             .Select(x => new

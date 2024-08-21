@@ -28,6 +28,31 @@ public sealed class MensagemAtendimentoRepository : IMensagemAtendimentoReposito
             .FirstOrDefaultAsync(x => x.RemoteId == remoteId);
     }
 
+    public async Task<IList<MensagemAtendimento>> MensagensDoAtendimentoAsync(Guid atendimentoId)
+    {
+        return await _admCompanyContext
+            .MensagemAtendimentos
+            .AsNoTracking()
+            .OrderBy(x => x.CriadoEm)
+            .Where(x => x.AtendimentoId == atendimentoId)
+            .Take(100)
+            .ToListAsync();
+    }
+
+    public async Task<int> MensagensNaoLidasAtendimentoAsync(Guid atendimentoId)
+    {
+        try
+        {
+            return await _admCompanyContext
+                .MensagemAtendimentos
+                .CountAsync(x => x.Status != Domain.Enums.StatusMensagem.Lida && !x.MinhaMensagem && x.AtendimentoId == atendimentoId);
+        }
+        catch (Exception)
+        {
+            return 0;
+        }
+    }
+
     public async Task UpdateAsync(MensagemAtendimento mensagemAtendimento)
     {
         _admCompanyContext.Attach(mensagemAtendimento);
