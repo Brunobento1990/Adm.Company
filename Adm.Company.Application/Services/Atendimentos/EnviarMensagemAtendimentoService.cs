@@ -56,7 +56,7 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
         var mensagemAtendimento = new MensagemAtendimento(
             id: Guid.NewGuid(),
             criadoEm: DateTime.Now,
-            atualizadoEm: null,
+            atualizadoEm: DateTime.Now,
             numero: 0,
             mensagem: enviarMensagemAtendimentoDto.Mensagem,
             atendimentoId: atendimento.Id,

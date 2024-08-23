@@ -1,4 +1,5 @@
 ﻿using Adm.Company.Domain.Entities;
+using Adm.Company.Domain.Enums;
 using Adm.Company.Domain.Interfaces;
 using Adm.Company.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,16 @@ public sealed class MensagemAtendimentoRepository : IMensagemAtendimentoReposito
         await _admCompanyContext.SaveChangesAsync();
     }
 
+    public async Task BulkUpdateStatusAsync(IList<Guid> ids, StatusMensagem status)
+    {
+        if (ids.Count == 0) return;
+
+        await _admCompanyContext
+            .MensagemAtendimentos
+            .Where(x => ids.Contains(x.Id))
+            .ExecuteUpdateAsync(x => x.SetProperty(y => y.Status, status));
+    }
+
     public async Task<MensagemAtendimento?> GetByRemoteIdAsync(string remoteId)
     {
         return await _admCompanyContext
@@ -33,7 +44,7 @@ public sealed class MensagemAtendimentoRepository : IMensagemAtendimentoReposito
         return await _admCompanyContext
             .MensagemAtendimentos
             .AsNoTracking()
-            .OrderBy(x => x.CriadoEm)
+            .OrderBy(x => x.AtualizadoEm)
             .Where(x => x.AtendimentoId == atendimentoId)
             .Take(100)
             .ToListAsync();

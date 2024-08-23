@@ -50,7 +50,7 @@ public sealed class Atendimento : BaseEntityEmpresa
             var atendimento = new Atendimento(
                 id: Guid.NewGuid(),
                 criadoEm: DateTime.Now,
-                atualizadoEm: null,
+                atualizadoEm: DateTime.Now,
                 numero: 0,
                 empresaId: empresaId,
                 status: StatusAtendimento.Aberto,

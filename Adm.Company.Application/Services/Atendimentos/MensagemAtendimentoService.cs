@@ -18,6 +18,12 @@ public sealed class MensagemAtendimentoService : IMensagemAtendimentoService
         var mensagensAtendimentos = await _mensagemAtendimentoRepository
             .MensagensDoAtendimentoAsync(atendimentoId);
 
+        var idsMensagensNaoLidas = mensagensAtendimentos
+            .Where(x => !x.MinhaMensagem && x.Status != Domain.Enums.StatusMensagem.Lida)
+            .Select(x => x.Id)
+            .ToList();
+        await _mensagemAtendimentoRepository.BulkUpdateStatusAsync(idsMensagensNaoLidas, Domain.Enums.StatusMensagem.Lida);
+
         return mensagensAtendimentos.Select(x => (MensagemAtendimentoViewModel)x).ToList();
     }
 }

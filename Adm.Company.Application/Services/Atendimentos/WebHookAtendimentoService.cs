@@ -89,7 +89,7 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
         var novaMensagem = new MensagemAtendimento(
             id: Guid.NewGuid(),
             criadoEm: DateTime.Now,
-            atualizadoEm: null,
+            atualizadoEm: DateTime.Now,
             numero: 0,
             mensagem: mensagem,
             status: StatusMensagem.Entregue,
