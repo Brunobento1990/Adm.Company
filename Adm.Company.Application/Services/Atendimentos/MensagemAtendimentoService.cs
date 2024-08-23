@@ -1,5 +1,6 @@
 ﻿using Adm.Company.Application.Interfaces.Atendimento;
 using Adm.Company.Application.ViewModel.Atendimentos;
+using Adm.Company.Domain.Enums;
 using Adm.Company.Domain.Interfaces;
 
 namespace Adm.Company.Application.Services.Atendimentos;
@@ -19,10 +20,20 @@ public sealed class MensagemAtendimentoService : IMensagemAtendimentoService
             .MensagensDoAtendimentoAsync(atendimentoId);
 
         var idsMensagensNaoLidas = mensagensAtendimentos
-            .Where(x => !x.MinhaMensagem && x.Status != Domain.Enums.StatusMensagem.Lida)
+            .Where(x => !x.MinhaMensagem && x.Status != StatusMensagem.Lida)
             .Select(x => x.Id)
             .ToList();
-        await _mensagemAtendimentoRepository.BulkUpdateStatusAsync(idsMensagensNaoLidas, Domain.Enums.StatusMensagem.Lida);
+        await _mensagemAtendimentoRepository
+            .BulkUpdateStatusAsync(idsMensagensNaoLidas, StatusMensagem.Lida);
+        
+        var lerMensagens = mensagensAtendimentos
+            .Where(x => !x.MinhaMensagem && x.Status != StatusMensagem.Lida)
+            .ToList();
+
+        foreach (var mensagem in lerMensagens)
+        {
+            mensagem.UpdateStatus(StatusMensagem.Lida);
+        }
 
         return mensagensAtendimentos.Select(x => (MensagemAtendimentoViewModel)x).ToList();
     }
