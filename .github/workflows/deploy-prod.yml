@@ -21,7 +21,7 @@ jobs:
     - name: Build
       run: dotnet build ./Adm.Company.Api --configuration Release
     - name: Build-Image-Docker
-      run: docker build ./Adm.Company.Api -t brunobentocaina/adm-company-api:latest
+      run: docker build Adm.Company.Api/Dockerfile -t brunobentocaina/adm-company-api:latest
     - name: Push
       run: |
         docker login -u brunobentocaina -p ${{ secrets.DOCKER_HUB_KEY }}
