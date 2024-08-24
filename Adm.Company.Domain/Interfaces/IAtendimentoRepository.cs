@@ -5,6 +5,7 @@ namespace Adm.Company.Domain.Interfaces;
 
 public interface IAtendimentoRepository
 {
+    Task UpdateAsync(Atendimento atendimento);
     Task<Atendimento?> GetAtendimentoByStatusAsync(
         StatusAtendimento statusAtendimento, 
         string numeroWhats, 
@@ -12,4 +13,5 @@ public interface IAtendimentoRepository
     Task AddAsync(Atendimento atendimento);
     Task<Atendimento?> GetByIdAsync(Guid id);
     Task<IList<Atendimento>> GetMeuAtendimentosAsync(Guid usuarioId, Guid empresaId, StatusAtendimento statusAtendimento);
+    Task<IList<Atendimento>> GetAtendimentosAsync(Guid empresaId, StatusAtendimento statusAtendimento);
 }

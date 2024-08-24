@@ -1,12 +1,13 @@
 ﻿using Adm.Company.Application.Dtos.Atendimentos;
+using Adm.Company.Application.Helpers;
 using Adm.Company.Application.Interfaces.Atendimento;
 using Adm.Company.Application.ViewModel.Atendimentos;
-using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Enums;
 using Adm.Company.Domain.Exceptions;
 using Adm.Company.Domain.Interfaces;
 using Adm.Company.Infrastructure.HttpServices.Interfaces;
 using Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
+using static Adm.Company.Domain.Entities.MensagemAtendimento;
 
 namespace Adm.Company.Application.Services.Atendimentos;
 
@@ -32,41 +33,62 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
         _chatWhatsHttpService = chatWhatsHttpService;
     }
 
-    public async Task<MensagemAtendimentoViewModel> EnviarMensagemAsync(EnviarMensagemAtendimentoDto enviarMensagemAtendimentoDto)
+    public async Task<MensagemAtendimentoViewModel> EnviarMensagemAsync(
+        EnviarMensagemAtendimentoDto enviarMensagemAtendimentoDto)
     {
-        var atendimento = await _atendimentoRepository.GetByIdAsync(enviarMensagemAtendimentoDto.AtendimentoId)
+        var atendimento = await _atendimentoRepository
+                .GetByIdAsync(enviarMensagemAtendimentoDto.AtendimentoId)
             ?? throw new ExceptionApiErro("Não foi possível localizar o atendimento!");
-        var configuracaoAtendimento = await _configuracaoAtendimentoEmpresaRepository.GetConfiguracaoAtendimentoEmpresaByEmpresaIdAsync(_usuarioAutenticado.EmpresaId)
+
+        var configuracaoAtendimento = await _configuracaoAtendimentoEmpresaRepository
+                .GetConfiguracaoAtendimentoEmpresaByEmpresaIdAsync(_usuarioAutenticado.EmpresaId)
             ?? throw new ExceptionApiErro("Não foi possível localizar as configurações de atendimento!");
 
-        var result = await _chatWhatsHttpService.EnviarMensagemAsync(configuracaoAtendimento.WhatsApp, new EnviarMensagemRequest()
-        {
-            Number = atendimento.Cliente.RemoteJid ?? "",
-            TextMessage = new()
-            {
-                Text = enviarMensagemAtendimentoDto.Mensagem
-            }
-        });
+        var result = await EnviarMensagemAsync(
+            instanceName: configuracaoAtendimento.WhatsApp,
+            remoteJid: atendimento.Cliente.RemoteJid ?? string.Empty,
+            mensagem: enviarMensagemAtendimentoDto.Mensagem,
+            audio: enviarMensagemAtendimentoDto.Audio);
 
-        if (result == null || result.Key == null)
+        if (string.IsNullOrWhiteSpace(result))
         {
-            throw new ExceptionApiErro("Não foi possível enviar a mensagem, tente novamente!");
+            throw new ExceptionApiErro("Não foi possível enviar a mensagem!");
         }
 
-        var mensagemAtendimento = new MensagemAtendimento(
-            id: Guid.NewGuid(),
-            criadoEm: DateTime.Now,
-            atualizadoEm: DateTime.Now,
-            numero: 0,
+        var audio = enviarMensagemAtendimentoDto.Audio?.ConverterStringParaBytes();
+
+        var mensagemAtendimento = FabricaMensagem.Fabricar(
             mensagem: enviarMensagemAtendimentoDto.Mensagem,
+            minhaMensagem: true,
+            remoteId: result,
             atendimentoId: atendimento.Id,
-            status: StatusMensagem.Enviado,
-            tipoMensagem: "conversation",
-            remoteId: result.Key.Id,
-            minhaMensagem: true);
+            audio: audio,
+            status: StatusMensagem.Enviado);
 
         await _mensagemAtendimentoRepository.AddAsync(mensagemAtendimento);
 
         return (MensagemAtendimentoViewModel)mensagemAtendimento;
+    }
+
+    private async Task<string?> EnviarMensagemAsync(string instanceName, string remoteJid, string mensagem, string? audio)
+    {
+        if (!string.IsNullOrWhiteSpace(audio))
+        {
+            var response = await _chatWhatsHttpService.EnviarAudioAsync(instanceName, new EnviarAudioRequest()
+            {
+                Audio = audio,
+                Number = remoteJid
+            });
+
+            return response?.Key?.Id;
+        }
+
+        var result = await _chatWhatsHttpService.EnviarMensagemAsync(instanceName, new EnviarMensagemRequest()
+        {
+            Number = remoteJid,
+            Text = mensagem
+        });
+
+        return result?.Key?.Id;
     }
 }

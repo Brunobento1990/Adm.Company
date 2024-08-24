@@ -4,10 +4,11 @@ using System.Text;
 
 namespace Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
 
-public class EnviarMensagemRequest
+public class EnviarAudioRequest
 {
     public string Number { get; set; } = string.Empty;
-    public string Text { get; set; } = string.Empty;
+    public string Audio { get; set; } = string.Empty;
+
 
     public StringContent ToJson()
     {

@@ -4,10 +4,10 @@ using System.Text;
 
 namespace Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
 
-public class EnviarMensagemRequest
+public class ConvertAudioRequest
 {
-    public string Number { get; set; } = string.Empty;
-    public string Text { get; set; } = string.Empty;
+    public bool ConvertToMp4 { get; set; } = false;
+    public MessageConvertAudioRequest Message { get; set; } = null!;
 
     public StringContent ToJson()
     {
@@ -18,4 +18,14 @@ public class EnviarMensagemRequest
                 Encoding.UTF8,
                 "application/json");
     }
+}
+
+public class MessageConvertAudioRequest
+{
+    public KeyConvertAudioRequest Key { get; set; } = null!;
+}
+
+public class KeyConvertAudioRequest
+{
+    public string Id { get; set; } = string.Empty;
 }

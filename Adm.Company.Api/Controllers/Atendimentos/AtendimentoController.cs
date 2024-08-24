@@ -28,4 +28,24 @@ public class AtendimentoController : ControllerBase
         var atendimentosViewModel = await _atendimentoService.MeusAtendimentosAsync();
         return Ok(atendimentosViewModel);
     }
+
+    [HttpGet("atendimentos-aberto")]
+    [ProducesResponseType<IList<AtendimentoViewModel>>(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> AtendimentosAberto()
+    {
+        var atendimentosViewModel = await _atendimentoService.AtendimentosEmAbertoAsync();
+        return Ok(atendimentosViewModel);
+    }
+
+    [HttpPut("iniciar-atendimento")]
+    [ProducesResponseType<AtendimentoViewModel>(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> AtendimentosAberto([FromQuery] Guid atendimentoId)
+    {
+        var atendimentosViewModel = await _atendimentoService.IniciarAtendimentoAsync(atendimentoId);
+        return Ok(atendimentosViewModel);
+    }
 }

@@ -37,15 +37,21 @@ public sealed class Atendimento : BaseEntityEmpresa
     public Guid ClienteId { get; private set; }
     public Cliente Cliente { get; set; } = null!;
 
+    public void IniciarAtendimento(Guid usuarioId)
+    {
+        UsuarioId = usuarioId;
+        Status = StatusAtendimento.EmAndamento;
+    }
     public static class Factorie
     {
         public static Atendimento Iniciar(
-            string mensagem, 
-            Guid empresaId, 
-            string tipoMensagem, 
+            string mensagem,
+            Guid empresaId,
+            string tipoMensagem,
             string remoteId,
             bool minhaMensagem,
-            Guid clienteId)
+            Guid clienteId,
+            byte[]? audio)
         {
             var atendimento = new Atendimento(
                 id: Guid.NewGuid(),
@@ -70,7 +76,8 @@ public sealed class Atendimento : BaseEntityEmpresa
                 atendimentoId: atendimento.Id,
                 tipoMensagem: tipoMensagem,
                 remoteId: remoteId,
-                minhaMensagem: minhaMensagem));
+                minhaMensagem: minhaMensagem,
+                audio: audio));
 
             return atendimento;
         }

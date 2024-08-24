@@ -63,11 +63,15 @@ public sealed class WhatsServiceInstanceService : IWhatsServiceInstanceService
 
         if (resultCreate != null)
         {
-            return new()
+            var resultConecao2 = await _whatsHttpService.GetConnectInstanceAsync(configuracaoWhats.WhatsApp);
+            if (resultConecao2 != null)
             {
-                QrCode = resultCreate.Qrcode.Base64,
-                Status = 201
-            };
+                return new()
+                {
+                    QrCode = resultConecao2.Base64,
+                    Status = 201
+                };
+            }
         }
 
         return null;

@@ -14,7 +14,8 @@ public sealed class MensagemAtendimento : BaseEntity
         StatusMensagem status,
         string tipoMensagem,
         string remoteId,
-        bool minhaMensagem)
+        bool minhaMensagem,
+        byte[]? audio)
             : base(id, criadoEm, atualizadoEm, numero)
     {
         Mensagem = mensagem;
@@ -23,6 +24,7 @@ public sealed class MensagemAtendimento : BaseEntity
         TipoMensagem = tipoMensagem;
         RemoteId = remoteId;
         MinhaMensagem = minhaMensagem;
+        Audio = audio;
     }
 
     public void UpdateStatus(StatusMensagem statusMensagem)
@@ -37,4 +39,37 @@ public sealed class MensagemAtendimento : BaseEntity
     public bool MinhaMensagem { get; private set; }
     public Guid AtendimentoId { get; private set; }
     public Atendimento Atendimento { get; set; } = null!;
+    public byte[]? Audio { get; private set; }
+
+    public class FabricaMensagem
+    {
+        public static MensagemAtendimento Fabricar(
+            string mensagem,
+            bool minhaMensagem,
+            string remoteId,
+            Guid atendimentoId,
+            byte[]? audio,
+            StatusMensagem status)
+        {
+            string tipoMensagem = "conversation";
+
+            if (audio != null)
+            {
+                tipoMensagem = "audioMessage";
+            }
+
+            return new MensagemAtendimento(
+                id: Guid.NewGuid(),
+                criadoEm: DateTime.Now,
+                atualizadoEm: DateTime.Now,
+                numero: 0,
+                mensagem: mensagem,
+                atendimentoId: atendimentoId,
+                status: status,
+                tipoMensagem: tipoMensagem,
+                remoteId: remoteId,
+                minhaMensagem: minhaMensagem,
+                audio: audio);
+        }
+    }
 }

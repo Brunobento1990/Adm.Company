@@ -61,12 +61,13 @@ public class WebHookWhatsController : ControllerBase
         {
             await _webHookAtendimentoService
                 .CreateOrUpdateAtendimentoWebHookAsync(
-                    body.Data.Message?.Conversation ?? string.Empty,
-                    body.Instance,
-                    body.Data.Key.RemoteJid,
-                    body.Data.Key.Id,
-                    body.Data.MessageType,
-                    body.Data.PushName);
+                    mensagem: body.Data.Message?.Conversation ?? string.Empty,
+                    numeroWhatsEmpresa: body.Instance,
+                    numeroWhatsOrigem: body.Data.Key.RemoteJid,
+                    remoteId: body.Data.Key.Id,
+                    tipoMensagem: body.Data.MessageType,
+                    nome: body.Data.PushName,
+                    fromMe: body.Data.Key.FromMe);
         }
         return Ok();
     }
@@ -74,9 +75,9 @@ public class WebHookWhatsController : ControllerBase
     [HttpPost("messages-update")]
     public async Task<IActionResult> UpdateMensagem([FromBody] UpdateMensagemWhatsViewModel body)
     {
-        if (!string.IsNullOrWhiteSpace(body.Instance) && body.Data != null && !string.IsNullOrWhiteSpace(body.Data.Id))
+        if (!string.IsNullOrWhiteSpace(body.Instance) && body.Data != null && !string.IsNullOrWhiteSpace(body.Data.KeyId))
         {
-            await _atualizarMensagemAtendimentoService.AtualizarAsync(body.Instance, body.Data.Status, body.Data.Id);
+            await _atualizarMensagemAtendimentoService.AtualizarAsync(body.Instance, body.Data.Status, body.Data.KeyId);
         }
 
         return Ok();

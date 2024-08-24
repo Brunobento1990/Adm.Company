@@ -33,7 +33,7 @@ public sealed class ChatWhatsHttpService : IChatWhatsHttpService
         return JsonSerializer.Deserialize<IList<ContatoResponse>>(body, JsonOptionsModel.Options) ?? [];
     }
 
-    public async Task<FetchInstanceResponse?> GetPerfilAsync(string instanceName)
+    public async Task<IList<FetchInstanceResponse>?> GetPerfilAsync(string instanceName)
     {
         var client = _httpClientFactory.CreateClient("WHATS");
         var response = await client.GetAsync($"instance/fetchInstances?instanceName={instanceName}");
@@ -43,7 +43,7 @@ public sealed class ChatWhatsHttpService : IChatWhatsHttpService
             Console.WriteLine($"Erro evolution api: {body}");
             return null;
         }
-        return JsonSerializer.Deserialize<FetchInstanceResponse>(body, JsonOptionsModel.Options);
+        return JsonSerializer.Deserialize<IList<FetchInstanceResponse>?>(body, JsonOptionsModel.Options);
     }
 
     public async Task<PerfilClienteWhatsResponse?> GetPerfilClienteAsync(string instanceName, string remoteJid)
@@ -72,6 +72,36 @@ public sealed class ChatWhatsHttpService : IChatWhatsHttpService
             Console.WriteLine($"Erro evolution api: {body}");
             return null;
         }
-        return JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options); ;
+        return JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options);
+    }
+
+    public async Task<ConvertAudioResponse?> ConvertAudioMensagemAsync(string instanceName, ConvertAudioRequest convertAudioRequest)
+    {
+        var client = _httpClientFactory.CreateClient("WHATS");
+        var response = await client
+            .PostAsync($"{URL_CONNECT_INSTANCE}getBase64FromMediaMessage/{instanceName}", convertAudioRequest.ToJson());
+
+        var body = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine(body);
+            return null;
+        }
+
+        return JsonSerializer.Deserialize<ConvertAudioResponse>(body, JsonOptionsModel.Options);
+    }
+
+    public async Task<EnviarMensagemResponse?> EnviarAudioAsync(string instanceName, EnviarAudioRequest enviarAudioRequest)
+    {
+        var client = _httpClientFactory.CreateClient("WHATS");
+        var response = await client.PostAsync($"/message/sendWhatsAppAudio/{instanceName}", enviarAudioRequest.ToJson());
+            var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine(body);
+            return null;
+        }
+        return JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options);
     }
 }

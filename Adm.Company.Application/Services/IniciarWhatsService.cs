@@ -30,14 +30,13 @@ public sealed class IniciarWhatsService : IIniciarWhatsService
     public async Task<IniciarWhatsViewModel> GetPerfilAsync()
     {
         var configuracaoWhats = await GetConfiguracaoAtendimentoEmpresaAsync();
-        var perfil = await _chatWhatsHttpService.GetPerfilAsync(configuracaoWhats.WhatsApp)
-            ?? throw new ExceptionApiErro("Não foi possível obter seu perfil do whtas!");
+        var perfil = await _chatWhatsHttpService.GetPerfilAsync(configuracaoWhats.WhatsApp);
         var contatos = await _chatWhatsHttpService.GetContatosAsync(configuracaoWhats.WhatsApp);
 
         var perfilViewModel = new PerfilWhatsViewModel()
         {
-            Foto = perfil.Instance.ProfilePictureUrl,
-            Nome = perfil.Instance.ProfileName
+            Foto = perfil?.FirstOrDefault()?.ProfilePicUrl ?? string.Empty,
+            Nome = perfil?.FirstOrDefault()?.ProfileName ?? string.Empty
         };
 
         var contatosViewModel = contatos.Select(x => new ContatoWhatsViewModel()

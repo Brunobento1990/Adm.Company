@@ -11,22 +11,37 @@ public sealed class AtendimentoService : IAtendimentoService
 {
     private readonly IUsuarioAutenticado _usuarioAutenticado;
     private readonly IAtendimentoRepository _atendimentoRepository;
-    private readonly IChatWhatsHttpService _chatWhatsHttpService;
     private readonly IConfiguracaoAtendimentoEmpresaRepository _configuracaoAtendimentoEmpresaRepository;
     private readonly IMensagemAtendimentoRepository _mensagemAtendimentoRepository;
 
     public AtendimentoService(
         IUsuarioAutenticado usuarioAutenticado,
         IAtendimentoRepository atendimentoRepository,
-        IChatWhatsHttpService chatWhatsHttpService,
         IConfiguracaoAtendimentoEmpresaRepository configuracaoAtendimentoEmpresaRepository,
         IMensagemAtendimentoRepository mensagemAtendimentoRepository)
     {
         _usuarioAutenticado = usuarioAutenticado;
         _atendimentoRepository = atendimentoRepository;
-        _chatWhatsHttpService = chatWhatsHttpService;
         _configuracaoAtendimentoEmpresaRepository = configuracaoAtendimentoEmpresaRepository;
         _mensagemAtendimentoRepository = mensagemAtendimentoRepository;
+    }
+
+    public async Task<IList<AtendimentoViewModel>> AtendimentosEmAbertoAsync()
+    {
+        var atendimentos = await _atendimentoRepository.GetAtendimentosAsync(_usuarioAutenticado.EmpresaId, StatusAtendimento.Aberto);
+
+        return atendimentos.Select(x => (AtendimentoViewModel)x).ToList();
+    }
+
+    public async Task<AtendimentoViewModel> IniciarAtendimentoAsync(Guid atendimentoId)
+    {
+        var atendimento = await _atendimentoRepository.GetByIdAsync(atendimentoId)
+            ?? throw new ExceptionApiErro("Não foi possível localizar o atendimento!");
+
+        atendimento.IniciarAtendimento(_usuarioAutenticado.Id);
+        await _atendimentoRepository.UpdateAsync(atendimento);
+
+        return (AtendimentoViewModel)atendimento;
     }
 
     public async Task<IList<AtendimentoViewModel>> MeusAtendimentosAsync()
@@ -43,13 +58,6 @@ public sealed class AtendimentoService : IAtendimentoService
         foreach (var atendimento in atendimentos)
         {
             var atendimentoViewModel = (AtendimentoViewModel)atendimento;
-            if (!string.IsNullOrWhiteSpace(atendimento.Cliente.RemoteJid))
-            {
-                var responsePerfil = await _chatWhatsHttpService
-                    .GetPerfilClienteAsync(configuracaoAtendimento.WhatsApp, atendimento.Cliente.RemoteJid);
-
-                atendimentoViewModel.Cliente.Foto = responsePerfil?.ProfilePictureUrl;
-            }
 
             atendimentoViewModel.MensagensNaoLidas = await _mensagemAtendimentoRepository
                 .MensagensNaoLidasAtendimentoAsync(atendimentoViewModel.Id);

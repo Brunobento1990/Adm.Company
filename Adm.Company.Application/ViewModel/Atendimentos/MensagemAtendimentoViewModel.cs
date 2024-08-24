@@ -1,5 +1,6 @@
 ﻿using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Enums;
+using System.Text;
 
 namespace Adm.Company.Application.ViewModel.Atendimentos;
 
@@ -11,6 +12,7 @@ public class MensagemAtendimentoViewModel : BaseViewModel
     public string RemoteId { get; set; } = string.Empty;
     public bool MinhaMensagem { get; set; }
     public Guid AtendimentoId { get; set; }
+    public string? Audio { get; set; }
 
     public static explicit operator MensagemAtendimentoViewModel(MensagemAtendimento mensagemAtendimento)
     {
@@ -25,7 +27,8 @@ public class MensagemAtendimentoViewModel : BaseViewModel
             Numero = mensagemAtendimento.Numero,
             RemoteId = mensagemAtendimento.RemoteId,
             Status = mensagemAtendimento.Status,
-            TipoMensagem = mensagemAtendimento.TipoMensagem
+            TipoMensagem = mensagemAtendimento.TipoMensagem,
+            Audio = mensagemAtendimento.Audio != null ? Encoding.UTF8.GetString(mensagemAtendimento.Audio) : null
         };
     }
 }

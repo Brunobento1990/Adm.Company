@@ -22,8 +22,8 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
     }
 
     public async Task<Atendimento?> GetAtendimentoByStatusAsync(
-        StatusAtendimento statusAtendimento, 
-        string numeroWhats, 
+        StatusAtendimento statusAtendimento,
+        string numeroWhats,
         Guid empresaId)
     {
         return await _admCompanyContext
@@ -33,6 +33,13 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
             .Include(x => x.Cliente)
             .FirstOrDefaultAsync(x => x.Status == statusAtendimento && x.Cliente.RemoteJid == numeroWhats && x.EmpresaId == empresaId);
     }
+
+    public async Task<IList<Atendimento>> GetAtendimentosAsync(Guid empresaId, StatusAtendimento statusAtendimento) => await _admCompanyContext
+            .Atendimentos
+            .AsNoTracking()
+            .Include(x => x.Cliente)
+            .Where(x => x.EmpresaId == empresaId && x.Status == statusAtendimento)
+            .ToListAsync();
 
     public async Task<Atendimento?> GetByIdAsync(Guid id)
     {
@@ -44,8 +51,8 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
     }
 
     public async Task<IList<Atendimento>> GetMeuAtendimentosAsync(
-        Guid usuarioId, 
-        Guid empresaId, 
+        Guid usuarioId,
+        Guid empresaId,
         StatusAtendimento statusAtendimento)
     {
         var result = await _admCompanyContext
@@ -67,5 +74,12 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
             atendimento.Mensagens = x.Mensagens;
             return atendimento;
         }).ToList();
+    }
+
+    public async Task UpdateAsync(Atendimento atendimento)
+    {
+        _admCompanyContext.Attach(atendimento);
+        _admCompanyContext.Update(atendimento);
+        await _admCompanyContext.SaveChangesAsync();
     }
 }
