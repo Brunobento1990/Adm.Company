@@ -27,4 +27,10 @@ public class DataMensagemRecebidaWhatsResponse
 public class MensagemRecebida
 {
     public string Conversation { get; set; } = string.Empty;
+    public ImagemMensagem? ImageMessage { get; set; }
+}
+
+public class ImagemMensagem
+{
+    public string? Caption { get; set; }
 }

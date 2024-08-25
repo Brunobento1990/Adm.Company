@@ -9,5 +9,6 @@ public interface IWebHookAtendimentoService
         string remoteId, 
         string tipoMensagem, 
         string nome,
-        bool fromMe);
+        bool fromMe,
+        string? caption);
 }

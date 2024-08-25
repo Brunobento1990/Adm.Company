@@ -1,4 +1,5 @@
-﻿using Adm.Company.Domain.Entities;
+﻿using Adm.Company.Application.Helpers;
+using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Enums;
 using System.Text;
 
@@ -13,6 +14,9 @@ public class MensagemAtendimentoViewModel : BaseViewModel
     public bool MinhaMensagem { get; set; }
     public Guid AtendimentoId { get; set; }
     public string? Audio { get; set; }
+    public string? Imagem { get; set; }
+    public string? Figurinha { get; set; }
+    public string? DescricaoFoto { get; set; }
 
     public static explicit operator MensagemAtendimentoViewModel(MensagemAtendimento mensagemAtendimento)
     {
@@ -28,7 +32,10 @@ public class MensagemAtendimentoViewModel : BaseViewModel
             RemoteId = mensagemAtendimento.RemoteId,
             Status = mensagemAtendimento.Status,
             TipoMensagem = mensagemAtendimento.TipoMensagem,
-            Audio = mensagemAtendimento.Audio != null ? Encoding.UTF8.GetString(mensagemAtendimento.Audio) : null
+            Audio = mensagemAtendimento.Audio?.ConverterBytesParaString(),
+            Imagem = mensagemAtendimento.Imagem?.ConverterBytesParaString(),
+            Figurinha = mensagemAtendimento.Figurinha?.ConverterBytesParaString(),
+            DescricaoFoto = mensagemAtendimento.DescricaoFoto
         };
     }
 }

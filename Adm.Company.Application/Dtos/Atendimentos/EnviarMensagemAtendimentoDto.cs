@@ -5,4 +5,6 @@ public class EnviarMensagemAtendimentoDto
     public Guid AtendimentoId { get; set; }
     public string Mensagem { get; set; } = string.Empty;
     public string? Audio { get; set; }
+    public string? Imagem { get; set; }
+    public string? Figurinha { get; set; }
 }

@@ -67,7 +67,8 @@ public class WebHookWhatsController : ControllerBase
                     remoteId: body.Data.Key.Id,
                     tipoMensagem: body.Data.MessageType,
                     nome: body.Data.PushName,
-                    fromMe: body.Data.Key.FromMe);
+                    fromMe: body.Data.Key.FromMe,
+                    caption: body.Data.Message?.ImageMessage?.Caption);
         }
         return Ok();
     }

@@ -1,4 +1,5 @@
 ﻿using Adm.Company.Domain.Enums;
+using static Adm.Company.Domain.Entities.MensagemAtendimento;
 
 namespace Adm.Company.Domain.Entities;
 
@@ -51,7 +52,10 @@ public sealed class Atendimento : BaseEntityEmpresa
             string remoteId,
             bool minhaMensagem,
             Guid clienteId,
-            byte[]? audio)
+            byte[]? audio,
+            byte[]? figurinha,
+            byte[]? imagem,
+            string? descricaoFoto)
         {
             var atendimento = new Atendimento(
                 id: Guid.NewGuid(),
@@ -66,18 +70,16 @@ public sealed class Atendimento : BaseEntityEmpresa
                 mensagemCancelamento: null,
                 clienteId: clienteId);
 
-            atendimento.Mensagens.Add(new MensagemAtendimento(
-                id: Guid.NewGuid(),
-                criadoEm: DateTime.Now,
-                atualizadoEm: DateTime.Now,
-                numero: 0,
+            atendimento.Mensagens.Add(FabricaMensagem.Fabricar(
                 mensagem: mensagem,
-                status: StatusMensagem.Entregue,
-                atendimentoId: atendimento.Id,
-                tipoMensagem: tipoMensagem,
-                remoteId: remoteId,
                 minhaMensagem: minhaMensagem,
-                audio: audio));
+                remoteId: remoteId,
+                atendimentoId: atendimento.Id,
+                audio: audio,
+                status: StatusMensagem.Entregue,
+                figurinha: figurinha,
+                imagem: imagem,
+                descricaoFoto: descricaoFoto));
 
             return atendimento;
         }

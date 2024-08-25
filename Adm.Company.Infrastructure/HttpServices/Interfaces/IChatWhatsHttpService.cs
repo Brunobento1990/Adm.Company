@@ -11,4 +11,5 @@ public interface IChatWhatsHttpService
     Task<EnviarMensagemResponse?> EnviarMensagemAsync(string instanceName, EnviarMensagemRequest enviarMensagemRequest);
     Task<ConvertAudioResponse?> ConvertAudioMensagemAsync(string instanceName, ConvertAudioRequest convertAudioRequest);
     Task<EnviarMensagemResponse?> EnviarAudioAsync(string instanceName, EnviarAudioRequest enviarAudioRequest);
+    Task<EnviarMensagemResponse?> EnviaImagemAsync(string instanceName, EnviarImagemRequest enviarImagemRequest);
 }

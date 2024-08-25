@@ -4,11 +4,9 @@ using Adm.Company.Application.Interfaces.Atendimento;
 using Adm.Company.Application.ViewModel.Atendimentos;
 using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Enums;
-using Adm.Company.Domain.Exceptions;
 using Adm.Company.Domain.Interfaces;
 using Adm.Company.Infrastructure.HttpServices.Interfaces;
 using Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
-using Adm.Company.Infrastructure.Migrations;
 using Microsoft.AspNetCore.SignalR;
 using System.Text;
 
@@ -46,7 +44,8 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
         string remoteId,
         string tipoMensagem,
         string nome,
-        bool fromMe)
+        bool fromMe,
+        string? caption)
     {
         var configuracaoAtendimento = await _configuracaoAtendimentoEmpresaRepository
             .GetConfiguracaoAtendimentoEmpresaByNumeroWhtasAsync(numeroWhatsEmpresa);
@@ -54,6 +53,16 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
         if (configuracaoAtendimento == null) return;
 
         byte[]? audio = await MensagemAudioAsync(
+            tipoMensagem: tipoMensagem,
+            instanceName: configuracaoAtendimento.WhatsApp,
+            remoteId: remoteId);
+
+        byte[]? figurinha = await MensagemFigurinhaAsync(
+            tipoMensagem: tipoMensagem,
+            instanceName: configuracaoAtendimento.WhatsApp,
+            remoteId: remoteId);
+
+        byte[]? imagem = await MensagemImagemAsync(
             tipoMensagem: tipoMensagem,
             instanceName: configuracaoAtendimento.WhatsApp,
             remoteId: remoteId);
@@ -93,7 +102,10 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
                 tipoMensagem,
                 fromMe,
                 cliente.Id,
-                audio: audio);
+                audio: audio,
+                figurinha: figurinha,
+                imagem: imagem,
+                descricaoFoto: caption);
 
             await _atendimentoRepository.AddAsync(atendimento);
             await _hubContext.Clients.All.SendAsync(nameof(EnumHub.NovoAtendimento), new
@@ -114,7 +126,10 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
             tipoMensagem: tipoMensagem,
             remoteId: remoteId,
             minhaMensagem: fromMe,
-            audio: audio);
+            audio: audio,
+            figurinha: figurinha,
+            imagem: imagem,
+            descricaoFoto: caption);
 
         await _mensagemAtendimentoRepository.AddAsync(novaMensagem);
 
@@ -127,9 +142,11 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
 
     private async Task<byte[]?> MensagemAudioAsync(string tipoMensagem, string instanceName, string remoteId)
     {
-        if (tipoMensagem == "audioMessage")
+        if (tipoMensagem != nameof(TipoMensagemEnum.audioMessage))
         {
-            var convertAudio = await _chatWhatsHttpService
+            return null;
+        }
+        var convertAudio = await _chatWhatsHttpService
                 .ConvertAudioMensagemAsync(instanceName, new ConvertAudioRequest()
                 {
                     ConvertToMp4 = false,
@@ -142,9 +159,50 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
                     }
                 });
 
-            return convertAudio?.Base64 != null ? Encoding.UTF8.GetBytes(convertAudio.Base64) : null;
-        }
+        return convertAudio?.Base64 != null ? Encoding.UTF8.GetBytes(convertAudio.Base64) : null;
+    }
 
-        return null;
+    private async Task<byte[]?> MensagemFigurinhaAsync(string tipoMensagem, string instanceName, string remoteId)
+    {
+        if (tipoMensagem != nameof(TipoMensagemEnum.stickerMessage))
+        {
+            return null;
+        }
+        var convertAudio = await _chatWhatsHttpService
+                .ConvertAudioMensagemAsync(instanceName, new ConvertAudioRequest()
+                {
+                    ConvertToMp4 = false,
+                    Message = new MessageConvertAudioRequest()
+                    {
+                        Key = new KeyConvertAudioRequest()
+                        {
+                            Id = remoteId
+                        }
+                    }
+                });
+
+        return convertAudio?.Base64 != null ? Encoding.UTF8.GetBytes(convertAudio.Base64) : null;
+    }
+
+    private async Task<byte[]?> MensagemImagemAsync(string tipoMensagem, string instanceName, string remoteId)
+    {
+        if (tipoMensagem != nameof(TipoMensagemEnum.imageMessage))
+        {
+            return null;
+        }
+        var convertAudio = await _chatWhatsHttpService
+                .ConvertAudioMensagemAsync(instanceName, new ConvertAudioRequest()
+                {
+                    ConvertToMp4 = false,
+                    Message = new MessageConvertAudioRequest()
+                    {
+                        Key = new KeyConvertAudioRequest()
+                        {
+                            Id = remoteId
+                        }
+                    }
+                });
+
+        return convertAudio?.Base64 != null ? Encoding.UTF8.GetBytes(convertAudio.Base64) : null;
     }
 }

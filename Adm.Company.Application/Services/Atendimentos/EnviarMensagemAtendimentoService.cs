@@ -48,7 +48,8 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
             instanceName: configuracaoAtendimento.WhatsApp,
             remoteJid: atendimento.Cliente.RemoteJid ?? string.Empty,
             mensagem: enviarMensagemAtendimentoDto.Mensagem,
-            audio: enviarMensagemAtendimentoDto.Audio);
+            audio: enviarMensagemAtendimentoDto.Audio,
+            imagem: enviarMensagemAtendimentoDto.Imagem);
 
         if (string.IsNullOrWhiteSpace(result))
         {
@@ -56,6 +57,8 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
         }
 
         var audio = enviarMensagemAtendimentoDto.Audio?.ConverterStringParaBytes();
+        var imagem = enviarMensagemAtendimentoDto.Imagem?.ConverterStringParaBytes();
+        var figurinha = enviarMensagemAtendimentoDto.Figurinha?.ConverterStringParaBytes();
 
         var mensagemAtendimento = FabricaMensagem.Fabricar(
             mensagem: enviarMensagemAtendimentoDto.Mensagem,
@@ -63,14 +66,22 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
             remoteId: result,
             atendimentoId: atendimento.Id,
             audio: audio,
-            status: StatusMensagem.Enviado);
+            status: StatusMensagem.Enviado,
+            imagem: imagem,
+            figurinha: figurinha,
+            descricaoFoto: enviarMensagemAtendimentoDto.Mensagem);
 
         await _mensagemAtendimentoRepository.AddAsync(mensagemAtendimento);
 
         return (MensagemAtendimentoViewModel)mensagemAtendimento;
     }
 
-    private async Task<string?> EnviarMensagemAsync(string instanceName, string remoteJid, string mensagem, string? audio)
+    private async Task<string?> EnviarMensagemAsync(
+        string instanceName,
+        string remoteJid,
+        string mensagem,
+        string? audio,
+        string? imagem)
     {
         if (!string.IsNullOrWhiteSpace(audio))
         {
@@ -78,6 +89,18 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
             {
                 Audio = audio,
                 Number = remoteJid
+            });
+
+            return response?.Key?.Id;
+        }
+
+        if (!string.IsNullOrWhiteSpace(imagem))
+        {
+            var response = await _chatWhatsHttpService.EnviaImagemAsync(instanceName, new EnviarImagemRequest()
+            {
+                Number = remoteJid,
+                Caption = mensagem,
+                Media = imagem,
             });
 
             return response?.Key?.Id;

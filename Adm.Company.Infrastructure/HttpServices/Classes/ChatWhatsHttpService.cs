@@ -104,4 +104,17 @@ public sealed class ChatWhatsHttpService : IChatWhatsHttpService
         }
         return JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options);
     }
+
+    public async Task<EnviarMensagemResponse?> EnviaImagemAsync(string instanceName, EnviarImagemRequest enviarImagemRequest)
+    {
+        var client = _httpClientFactory.CreateClient("WHATS");
+        var response = await client.PostAsync($"/message/sendMedia/{instanceName}", enviarImagemRequest.ToJson());
+        var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine(body);
+            return null;
+        }
+        return JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options);
+    }
 }

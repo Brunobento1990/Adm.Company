@@ -3,6 +3,7 @@ using System;
 using Adm.Company.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Adm.Company.Infrastructure.Migrations
 {
     [DbContext(typeof(AdmCompanyContext))]
-    partial class AdmCompanyContextModelSnapshot : ModelSnapshot
+    [Migration("20240825215753_FigurinhaImagemMigration")]
+    partial class FigurinhaImagemMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,9 +250,6 @@ namespace Adm.Company.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("now()");
-
-                    b.Property<string>("DescricaoFoto")
-                        .HasColumnType("text");
 
                     b.Property<byte[]>("Figurinha")
                         .HasColumnType("bytea");

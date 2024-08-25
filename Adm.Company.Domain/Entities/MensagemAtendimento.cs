@@ -15,7 +15,10 @@ public sealed class MensagemAtendimento : BaseEntity
         string tipoMensagem,
         string remoteId,
         bool minhaMensagem,
-        byte[]? audio)
+        byte[]? audio,
+        byte[]? imagem,
+        byte[]? figurinha,
+        string? descricaoFoto)
             : base(id, criadoEm, atualizadoEm, numero)
     {
         Mensagem = mensagem;
@@ -25,6 +28,9 @@ public sealed class MensagemAtendimento : BaseEntity
         RemoteId = remoteId;
         MinhaMensagem = minhaMensagem;
         Audio = audio;
+        Imagem = imagem;
+        Figurinha = figurinha;
+        DescricaoFoto = descricaoFoto;
     }
 
     public void UpdateStatus(StatusMensagem statusMensagem)
@@ -40,6 +46,9 @@ public sealed class MensagemAtendimento : BaseEntity
     public Guid AtendimentoId { get; private set; }
     public Atendimento Atendimento { get; set; } = null!;
     public byte[]? Audio { get; private set; }
+    public byte[]? Imagem { get; private set; }
+    public byte[]? Figurinha { get; private set; }
+    public string? DescricaoFoto { get; private set; }
 
     public class FabricaMensagem
     {
@@ -49,13 +58,26 @@ public sealed class MensagemAtendimento : BaseEntity
             string remoteId,
             Guid atendimentoId,
             byte[]? audio,
-            StatusMensagem status)
+            StatusMensagem status,
+            byte[]? figurinha,
+            byte[]? imagem,
+            string? descricaoFoto)
         {
-            string tipoMensagem = "conversation";
+            string tipoMensagem = nameof(TipoMensagemEnum.conversation);
 
             if (audio != null)
             {
-                tipoMensagem = "audioMessage";
+                tipoMensagem = nameof(TipoMensagemEnum.audioMessage);
+            }
+
+            if (figurinha != null)
+            {
+                tipoMensagem = nameof(TipoMensagemEnum.stickerMessage);
+            }
+
+            if (imagem != null)
+            {
+                tipoMensagem = nameof(TipoMensagemEnum.imageMessage);
             }
 
             return new MensagemAtendimento(
@@ -69,7 +91,10 @@ public sealed class MensagemAtendimento : BaseEntity
                 tipoMensagem: tipoMensagem,
                 remoteId: remoteId,
                 minhaMensagem: minhaMensagem,
-                audio: audio);
+                audio: audio,
+                figurinha: figurinha,
+                imagem: imagem,
+                descricaoFoto: descricaoFoto);
         }
     }
 }
