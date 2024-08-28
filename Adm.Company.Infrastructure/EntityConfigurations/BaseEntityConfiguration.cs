@@ -17,7 +17,7 @@ public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T> w
             .ValueGeneratedOnAddOrUpdate()
             .HasDefaultValueSql("now()");
         builder.Property(x => x.Numero)
-            .IsRequired();
+            .ValueGeneratedOnAdd();
         builder.HasIndex(x => x.Numero);
     }
 }

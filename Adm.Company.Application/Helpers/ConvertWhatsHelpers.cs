@@ -9,7 +9,7 @@ public class ConvertWhatsHelpers
         if (string.IsNullOrWhiteSpace(remoteJid)) return string.Empty;
 
         var primeiraConversao = remoteJid.Split('@');
-        if(primeiraConversao != null)
+        if (primeiraConversao != null && primeiraConversao.Length > 0 && primeiraConversao[0].Length > 7)
         {
             var segundaConversao = primeiraConversao[0][2..];
             var numero = segundaConversao[2..];
@@ -27,12 +27,12 @@ public class ConvertWhatsHelpers
             return null;
         }
 
-        if(statusMensagem == "DELIVERY_ACK")
+        if (statusMensagem == "DELIVERY_ACK")
         {
             return StatusMensagem.Entregue;
         }
 
-        if(statusMensagem == "READ")
+        if (statusMensagem == "READ")
         {
             return StatusMensagem.Lida;
         }

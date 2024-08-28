@@ -9,6 +9,7 @@ using Adm.Company.Infrastructure.HttpServices.Interfaces;
 using Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
 using Microsoft.AspNetCore.SignalR;
 using System.Text;
+using static Adm.Company.Domain.Entities.Cliente;
 
 namespace Adm.Company.Application.Services.Atendimentos;
 
@@ -73,23 +74,17 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
         if (atendimento == null)
         {
             var numeroWhatsTratado = ConvertWhatsHelpers.ConvertRemoteJidWhats(numeroWhatsOrigem);
-            var cliente = await _clienteRepository.GetByNumeroWhatsAsync(numeroWhatsTratado);
+            var cliente = await _clienteRepository.GetByNumeroWhatsAsync(numeroWhatsTratado, configuracaoAtendimento.EmpresaId);
 
             if (cliente == null)
             {
                 var perfil = await _chatWhatsHttpService.GetPerfilAsync(configuracaoAtendimento.WhatsApp);
 
-                cliente = new Cliente(
-                    id: Guid.NewGuid(),
-                    criadoEm: DateTime.Now,
-                    atualizadoEm: DateTime.Now,
-                    numero: 0,
+                cliente = FactorieCliente.FactorieWhats(
                     empresaId: configuracaoAtendimento.EmpresaId,
-                    cpf: "sem CPF",
-                    whatsApp: numeroWhatsTratado,
-                    email: "sem email",
+                    numeroWhats: numeroWhatsTratado,
                     foto: perfil?.FirstOrDefault()?.ProfilePicUrl,
-                    nome: nome.Length > 255 ? nome[..255] : nome,
+                    nome: nome,
                     remoteJid: numeroWhatsOrigem);
 
                 await _clienteRepository.AddAsync(cliente);

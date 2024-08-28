@@ -5,5 +5,8 @@ namespace Adm.Company.Domain.Interfaces;
 public interface IClienteRepository
 {
     Task AddAsync(Cliente cliente);
-    Task<Cliente?> GetByNumeroWhatsAsync(string numeroWhats);    
+    Task AddRangeAsync(IList<Cliente> clientes);
+    Task UpdateRangeAsync(IList<Cliente> clientes);
+    Task<Cliente?> GetByNumeroWhatsAsync(string numeroWhats, Guid empresaId);    
+    Task<Cliente?> GetByRemoteJidWhatsAsync(string remoteJid, Guid empresaId);    
 }

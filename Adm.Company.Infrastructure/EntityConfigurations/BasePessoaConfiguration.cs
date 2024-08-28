@@ -16,13 +16,11 @@ public abstract class BasePessoaConfiguration<T> : IEntityTypeConfiguration<T> w
         builder.Property(x => x.AtualizadoEm)
             .ValueGeneratedOnUpdate();
         builder.Property(x => x.Numero)
-            .IsRequired();
+            .ValueGeneratedOnAdd();
 
         builder.Property(x => x.Cpf)
-            .IsRequired()
             .HasMaxLength(11);
         builder.Property(x => x.Email)
-            .IsRequired()
             .HasMaxLength(255);
         builder.Property(x => x.WhatsApp)
             .HasMaxLength(13);

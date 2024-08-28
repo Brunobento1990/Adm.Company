@@ -1,4 +1,5 @@
 ﻿using Adm.Company.Application.Hubs;
+using Adm.Company.Application.Interfaces;
 using Adm.Company.Application.Interfaces.Atendimento;
 using Adm.Company.Application.ViewModel.WhatsApi;
 using Adm.Company.Domain.Enums;
@@ -17,15 +18,18 @@ public class WebHookWhatsController : ControllerBase
     private readonly IHubContext<WhatsHub> _hubContext;
     private readonly IWebHookAtendimentoService _webHookAtendimentoService;
     private readonly IAtualizarMensagemAtendimentoService _atualizarMensagemAtendimentoService;
+    private readonly IClienteService _clienteService;
 
     public WebHookWhatsController(
         IHubContext<WhatsHub> hubContext,
         IWebHookAtendimentoService webHookAtendimentoService,
-        IAtualizarMensagemAtendimentoService atualizarMensagemAtendimentoService)
+        IAtualizarMensagemAtendimentoService atualizarMensagemAtendimentoService,
+        IClienteService clienteService)
     {
         _hubContext = hubContext;
         _webHookAtendimentoService = webHookAtendimentoService;
         _atualizarMensagemAtendimentoService = atualizarMensagemAtendimentoService;
+        _clienteService = clienteService;
     }
 
     [HttpPost("qrcode-updated")]
@@ -57,7 +61,7 @@ public class WebHookWhatsController : ControllerBase
     public async Task<IActionResult> ReceberMensagem([FromBody] MensagemRecebidaWhatsResponse body)
     {
 
-        if (body != null && body.Data != null && body.Data.Key != null)
+        if (body != null && body.Data != null && body.Data.Key != null && !body.Data.Key.FromMe)
         {
             await _webHookAtendimentoService
                 .CreateOrUpdateAtendimentoWebHookAsync(
@@ -81,6 +85,16 @@ public class WebHookWhatsController : ControllerBase
             await _atualizarMensagemAtendimentoService.AtualizarAsync(body.Instance, body.Data.Status, body.Data.KeyId);
         }
 
+        return Ok();
+    }
+
+    [HttpPost("contacts-update")]
+    public async Task<IActionResult> ContactsUpdate([FromBody] UpdateContactRequest body)
+    {
+        if (body?.Data?.Count > 0)
+        {
+            await _clienteService.AddClientesFromWhatsAsync(body);
+        }
         return Ok();
     }
 }
