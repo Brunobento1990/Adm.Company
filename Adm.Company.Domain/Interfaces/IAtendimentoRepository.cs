@@ -8,6 +8,7 @@ public interface IAtendimentoRepository
     Task UpdateAsync(Atendimento atendimento);
     Task<Atendimento?> GetAtendimentoByStatusAsync(
         StatusAtendimento statusAtendimento, 
+        StatusAtendimento statusAtendimentoOutro, 
         string numeroWhats, 
         Guid empresaId);
     Task AddAsync(Atendimento atendimento);

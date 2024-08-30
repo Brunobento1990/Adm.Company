@@ -7,6 +7,7 @@ public interface IClienteRepository
     Task AddAsync(Cliente cliente);
     Task AddRangeAsync(IList<Cliente> clientes);
     Task UpdateRangeAsync(IList<Cliente> clientes);
-    Task<Cliente?> GetByNumeroWhatsAsync(string numeroWhats, Guid empresaId);    
-    Task<Cliente?> GetByRemoteJidWhatsAsync(string remoteJid, Guid empresaId);    
+    Task<Cliente?> GetByNumeroWhatsAsync(string numeroWhats, Guid empresaId);
+    Task<Cliente?> GetByRemoteJidWhatsAsync(string remoteJid, Guid empresaId);
+    Task<IList<Cliente>> GetPaginacaoAsync(Guid empresaId);
 }

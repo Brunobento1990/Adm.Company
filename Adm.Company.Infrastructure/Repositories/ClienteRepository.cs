@@ -46,6 +46,15 @@ public sealed class ClienteRepository : IClienteRepository
             .FirstOrDefaultAsync(x => x.RemoteJid == remoteJid && x.EmpresaId == empresaId);
     }
 
+    public async Task<IList<Cliente>> GetPaginacaoAsync(Guid empresaId)
+    {
+        return await _admCompanyContext
+            .Clientes
+            .AsNoTracking()
+            .Where(x => x.EmpresaId == empresaId)
+            .ToListAsync();
+    }
+
     public async Task UpdateRangeAsync(IList<Cliente> clientes)
     {
         if(clientes?.Count > 0)

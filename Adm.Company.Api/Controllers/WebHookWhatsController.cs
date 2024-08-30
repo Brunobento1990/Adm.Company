@@ -60,7 +60,7 @@ public class WebHookWhatsController : ControllerBase
     [HttpPost("messages-upsert")]
     public async Task<IActionResult> ReceberMensagem([FromBody] MensagemRecebidaWhatsResponse body)
     {
-
+        //&& !body.Data.Key.FromMe
         if (body != null && body.Data != null && body.Data.Key != null && !body.Data.Key.FromMe)
         {
             await _webHookAtendimentoService

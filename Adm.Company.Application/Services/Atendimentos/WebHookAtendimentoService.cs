@@ -69,45 +69,48 @@ public sealed class WebHookAtendimentoService : IWebHookAtendimentoService
             remoteId: remoteId);
 
         var atendimento = await _atendimentoRepository
-            .GetAtendimentoByStatusAsync(StatusAtendimento.EmAndamento, numeroWhatsOrigem, configuracaoAtendimento.EmpresaId);
+            .GetAtendimentoByStatusAsync(StatusAtendimento.EmAndamento, StatusAtendimento.Aberto, numeroWhatsOrigem, configuracaoAtendimento.EmpresaId);
 
         if (atendimento == null)
         {
-            var numeroWhatsTratado = ConvertWhatsHelpers.ConvertRemoteJidWhats(numeroWhatsOrigem);
-            var cliente = await _clienteRepository.GetByNumeroWhatsAsync(numeroWhatsTratado, configuracaoAtendimento.EmpresaId);
-
-            if (cliente == null)
+            lock (this) 
             {
-                var perfil = await _chatWhatsHttpService.GetPerfilAsync(configuracaoAtendimento.WhatsApp);
+                var numeroWhatsTratado = ConvertWhatsHelpers.ConvertRemoteJidWhats(numeroWhatsOrigem);
+                var cliente = _clienteRepository.GetByNumeroWhatsAsync(numeroWhatsTratado, configuracaoAtendimento.EmpresaId).Result;
 
-                cliente = FactorieCliente.FactorieWhats(
-                    empresaId: configuracaoAtendimento.EmpresaId,
-                    numeroWhats: numeroWhatsTratado,
-                    foto: perfil?.FirstOrDefault()?.ProfilePicUrl,
-                    nome: nome,
-                    remoteJid: numeroWhatsOrigem);
+                if (cliente == null)
+                {
+                    var perfil = _chatWhatsHttpService.GetPerfilAsync(configuracaoAtendimento.WhatsApp).Result;
 
-                await _clienteRepository.AddAsync(cliente);
+                    cliente = FactorieCliente.FactorieWhats(
+                        empresaId: configuracaoAtendimento.EmpresaId,
+                        numeroWhats: numeroWhatsTratado,
+                        foto: perfil?.FirstOrDefault()?.ProfilePicUrl,
+                        nome: nome,
+                        remoteJid: numeroWhatsOrigem);
+
+                    _clienteRepository.AddAsync(cliente).Wait();
+                }
+
+                atendimento = Atendimento.Factorie.Iniciar(
+                    mensagem,
+                    configuracaoAtendimento.EmpresaId,
+                    remoteId,
+                    tipoMensagem,
+                    fromMe,
+                    cliente.Id,
+                    audio: audio,
+                    figurinha: figurinha,
+                    imagem: imagem,
+                    descricaoFoto: caption);
+
+                _atendimentoRepository.AddAsync(atendimento).Wait();
+                _hubContext.Clients.All.SendAsync(nameof(EnumHub.NovoAtendimento), new
+                {
+                    whatsApp = configuracaoAtendimento.WhatsApp,
+                }).Wait();
+                return;
             }
-
-            atendimento = Atendimento.Factorie.Iniciar(
-                mensagem,
-                configuracaoAtendimento.EmpresaId,
-                remoteId,
-                tipoMensagem,
-                fromMe,
-                cliente.Id,
-                audio: audio,
-                figurinha: figurinha,
-                imagem: imagem,
-                descricaoFoto: caption);
-
-            await _atendimentoRepository.AddAsync(atendimento);
-            await _hubContext.Clients.All.SendAsync(nameof(EnumHub.NovoAtendimento), new
-            {
-                whatsApp = configuracaoAtendimento.WhatsApp,
-            });
-            return;
         }
 
         var novaMensagem = new MensagemAtendimento(

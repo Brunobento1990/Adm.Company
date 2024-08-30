@@ -31,7 +31,6 @@ public sealed class IniciarWhatsService : IIniciarWhatsService
     {
         var configuracaoWhats = await GetConfiguracaoAtendimentoEmpresaAsync();
         var perfil = await _chatWhatsHttpService.GetPerfilAsync(configuracaoWhats.WhatsApp);
-        var contatos = await _chatWhatsHttpService.GetContatosAsync(configuracaoWhats.WhatsApp);
 
         var perfilViewModel = new PerfilWhatsViewModel()
         {
@@ -39,19 +38,10 @@ public sealed class IniciarWhatsService : IIniciarWhatsService
             Nome = perfil?.FirstOrDefault()?.ProfileName ?? string.Empty
         };
 
-        var contatosViewModel = contatos.Select(x => new ContatoWhatsViewModel()
-        {
-            Foto = x.ProfilePictureUrl,
-            Id = x.Id,
-            Nome = x.PushName,
-            Numero = x.Owner
-        }).ToList();
-
         var atendimentos = await _atendimentoService.MeusAtendimentosAsync();
 
         return new IniciarWhatsViewModel()
         {
-            Contatos = contatosViewModel,
             Perfil = perfilViewModel,
             Atendimentos = atendimentos
         };

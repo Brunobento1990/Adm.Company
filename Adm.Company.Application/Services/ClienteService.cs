@@ -1,5 +1,6 @@
 ﻿using Adm.Company.Application.Helpers;
 using Adm.Company.Application.Interfaces;
+using Adm.Company.Application.ViewModel;
 using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Interfaces;
 using Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
@@ -11,13 +12,16 @@ public sealed class ClienteService : IClienteService
 {
     private readonly IClienteRepository _clienteRepository;
     private readonly IConfiguracaoAtendimentoEmpresaRepository _configuracaoAtendimentoEmpresaRepository;
+    private readonly IUsuarioAutenticado _usuarioAutenticado;
 
     public ClienteService(
         IClienteRepository clienteRepository,
-        IConfiguracaoAtendimentoEmpresaRepository configuracaoAtendimentoEmpresaRepository)
+        IConfiguracaoAtendimentoEmpresaRepository configuracaoAtendimentoEmpresaRepository,
+        IUsuarioAutenticado usuarioAutenticado)
     {
         _clienteRepository = clienteRepository;
         _configuracaoAtendimentoEmpresaRepository = configuracaoAtendimentoEmpresaRepository;
+        _usuarioAutenticado = usuarioAutenticado;
     }
 
     public async Task AddClientesFromWhatsAsync(UpdateContactRequest updateContactRequest)
@@ -76,5 +80,12 @@ public sealed class ClienteService : IClienteService
         {
             Console.WriteLine(ex.Message);
         }
+    }
+
+    public async Task<IList<ClienteViewModel>> PaginacaoAsync()
+    {
+        var clientes = await _clienteRepository.GetPaginacaoAsync(_usuarioAutenticado.EmpresaId);
+
+        return clientes.Select(x => (ClienteViewModel)x).ToList();
     }
 }

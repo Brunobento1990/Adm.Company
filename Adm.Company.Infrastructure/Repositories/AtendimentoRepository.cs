@@ -23,6 +23,7 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
 
     public async Task<Atendimento?> GetAtendimentoByStatusAsync(
         StatusAtendimento statusAtendimento,
+        StatusAtendimento statusAtendimentoOutro,
         string numeroWhats,
         Guid empresaId)
     {
@@ -31,7 +32,7 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
             .AsNoTracking()
             .Include(x => x.Mensagens)
             .Include(x => x.Cliente)
-            .FirstOrDefaultAsync(x => x.Status == statusAtendimento && x.Cliente.RemoteJid == numeroWhats && x.EmpresaId == empresaId);
+            .FirstOrDefaultAsync(x => (x.Status == statusAtendimento || x.Status == statusAtendimentoOutro) && x.Cliente.RemoteJid == numeroWhats && x.EmpresaId == empresaId);
     }
 
     public async Task<IList<Atendimento>> GetAtendimentosAsync(Guid empresaId, StatusAtendimento statusAtendimento) => await _admCompanyContext
@@ -61,7 +62,7 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
             .OrderByDescending(x => x.AtualizadoEm)
                 .ThenByDescending(x => x.CriadoEm)
             .Include(x => x.Cliente)
-            .Where(x => x.UsuarioId == usuarioId && x.EmpresaId == empresaId)
+            .Where(x => x.UsuarioId == usuarioId && x.EmpresaId == empresaId && x.Status == statusAtendimento)
             .Select(x => new
             {
                 Atendimento = x,
