@@ -1,4 +1,5 @@
-﻿using Adm.Company.Application.Helpers;
+﻿using Adm.Company.Application.Dtos.Clientes;
+using Adm.Company.Application.Helpers;
 using Adm.Company.Application.Interfaces;
 using Adm.Company.Application.ViewModel;
 using Adm.Company.Domain.Entities;
@@ -82,9 +83,12 @@ public sealed class ClienteService : IClienteService
         }
     }
 
-    public async Task<IList<ClienteViewModel>> PaginacaoAsync()
+    public async Task<IList<ClienteViewModel>> PaginacaoAsync(PaginacaoClienteWhatsDto paginacaoClienteWhatsDto)
     {
-        var clientes = await _clienteRepository.GetPaginacaoAsync(_usuarioAutenticado.EmpresaId);
+        var clientes = await _clienteRepository.GetPaginacaoAsync(
+            _usuarioAutenticado.EmpresaId, 
+            skip: paginacaoClienteWhatsDto.Skip, 
+            search: paginacaoClienteWhatsDto.Search);
 
         return clientes.Select(x => (ClienteViewModel)x).ToList();
     }

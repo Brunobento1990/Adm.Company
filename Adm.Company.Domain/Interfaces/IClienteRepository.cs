@@ -9,5 +9,6 @@ public interface IClienteRepository
     Task UpdateRangeAsync(IList<Cliente> clientes);
     Task<Cliente?> GetByNumeroWhatsAsync(string numeroWhats, Guid empresaId);
     Task<Cliente?> GetByRemoteJidWhatsAsync(string remoteJid, Guid empresaId);
-    Task<IList<Cliente>> GetPaginacaoAsync(Guid empresaId);
+    Task<Cliente?> GetByIdAsync(Guid id, Guid empresaId);
+    Task<IList<Cliente>> GetPaginacaoAsync(Guid empresaId, int skip, string? search);
 }

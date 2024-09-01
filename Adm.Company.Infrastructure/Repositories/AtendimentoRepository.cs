@@ -35,6 +35,16 @@ public sealed class AtendimentoRepository : IAtendimentoRepository
             .FirstOrDefaultAsync(x => (x.Status == statusAtendimento || x.Status == statusAtendimentoOutro) && x.Cliente.RemoteJid == numeroWhats && x.EmpresaId == empresaId);
     }
 
+    public async Task<Atendimento?> GetAtendimentoEmAbertoByUsuarioIdAsync(Guid clienteId, Guid empresaId)
+    {
+        return await _admCompanyContext
+            .Atendimentos
+            .Include(x => x.Cliente)
+            .FirstOrDefaultAsync(x =>
+                (x.Status == StatusAtendimento.Aberto || x.Status == StatusAtendimento.EmAndamento) &&
+                x.ClienteId == clienteId && x.EmpresaId == empresaId);
+    }
+
     public async Task<IList<Atendimento>> GetAtendimentosAsync(Guid empresaId, StatusAtendimento statusAtendimento) => await _admCompanyContext
             .Atendimentos
             .AsNoTracking()

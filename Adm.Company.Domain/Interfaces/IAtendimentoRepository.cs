@@ -13,6 +13,7 @@ public interface IAtendimentoRepository
         Guid empresaId);
     Task AddAsync(Atendimento atendimento);
     Task<Atendimento?> GetByIdAsync(Guid id);
+    Task<Atendimento?> GetAtendimentoEmAbertoByUsuarioIdAsync(Guid clienteId, Guid empresaId);
     Task<IList<Atendimento>> GetMeuAtendimentosAsync(Guid usuarioId, Guid empresaId, StatusAtendimento statusAtendimento);
     Task<IList<Atendimento>> GetAtendimentosAsync(Guid empresaId, StatusAtendimento statusAtendimento);
 }

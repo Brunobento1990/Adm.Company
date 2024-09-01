@@ -1,4 +1,5 @@
 ﻿using Adm.Company.Api.Attributes;
+using Adm.Company.Application.Dtos.Atendimentos;
 using Adm.Company.Application.Interfaces.Atendimento;
 using Adm.Company.Application.ViewModel;
 using Adm.Company.Application.ViewModel.Atendimentos;
@@ -47,5 +48,41 @@ public class AtendimentoController : ControllerBase
     {
         var atendimentosViewModel = await _atendimentoService.IniciarAtendimentoAsync(atendimentoId);
         return Ok(atendimentosViewModel);
+    }
+
+    [HttpPost("novo-atendimento")]
+    [ProducesResponseType<AtendimentoViewModel>(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> NovoAtendimento([FromQuery] Guid clienteId)
+    {
+        var atendimentosViewModel = await _atendimentoService.NovoAtendimentoAsync(clienteId);
+        return Ok(atendimentosViewModel);
+    }
+
+    [HttpPut("finalizar-atendimento")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> FinalizarAtendimento(FinalizarAtendimentoDto finalizarAtendimentoDto)
+    {
+        await _atendimentoService.FinalizarAsync(finalizarAtendimentoDto);
+        return Ok(new
+        {
+            finalizado = true
+        });
+    }
+
+    [HttpPut("cancelar-atendimento")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> CancelarAtendimento(CancelarAtendimentoDto cancelarAtendimentoDto)
+    {
+        await _atendimentoService.CancelarAtendimentoAsync(cancelarAtendimentoDto);
+        return Ok(new
+        {
+            cancelado = true
+        });
     }
 }

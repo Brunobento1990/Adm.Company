@@ -1,6 +1,7 @@
 ﻿using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Interfaces;
 using Adm.Company.Infrastructure.Context;
+using Adm.Company.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Adm.Company.Infrastructure.Repositories;
@@ -30,6 +31,13 @@ public sealed class ClienteRepository : IClienteRepository
 
     }
 
+    public async Task<Cliente?> GetByIdAsync(Guid id, Guid empresaId)
+    {
+        return await _admCompanyContext
+            .Clientes
+            .FirstOrDefaultAsync(x => x.Id == id && x.EmpresaId == empresaId);
+    }
+
     public async Task<Cliente?> GetByNumeroWhatsAsync(string numeroWhats, Guid empresaId)
     {
         return await _admCompanyContext
@@ -46,18 +54,32 @@ public sealed class ClienteRepository : IClienteRepository
             .FirstOrDefaultAsync(x => x.RemoteJid == remoteJid && x.EmpresaId == empresaId);
     }
 
-    public async Task<IList<Cliente>> GetPaginacaoAsync(Guid empresaId)
+    public async Task<IList<Cliente>> GetPaginacaoAsync(Guid empresaId, int skip, string? search)
     {
-        return await _admCompanyContext
+        var clientes = _admCompanyContext
             .Clientes
             .AsNoTracking()
-            .Where(x => x.EmpresaId == empresaId)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            clientes = clientes.Where(x => x.EmpresaId == empresaId && x.Nome.ToLower().Contains(search.ToLower()));
+        }
+        else
+        {
+            clientes = clientes.Where(x => x.EmpresaId == empresaId);
+        };
+
+
+        return await clientes  
+            .OrderBy(x => x.Nome)
+            .Paginate(skip: skip, take: 50)
             .ToListAsync();
     }
 
     public async Task UpdateRangeAsync(IList<Cliente> clientes)
     {
-        if(clientes?.Count > 0)
+        if (clientes?.Count > 0)
         {
             _admCompanyContext.AttachRange(clientes);
             _admCompanyContext.UpdateRange(clientes);
