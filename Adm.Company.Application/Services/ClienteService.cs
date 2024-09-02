@@ -58,7 +58,7 @@ public sealed class ClienteService : IClienteService
 
                         clientes.Add(FactorieCliente.FactorieWhats(
                             empresaId: configuracao.EmpresaId,
-                            numeroWhats: numeroWhatsTratado,
+                            numeroWhats: numeroWhatsTratado.Length > 13 ? numeroWhatsTratado[..13] : numeroWhatsTratado,
                             foto: clienteDto.ProfilePicUrl,
                             nome: clienteDto.PushName,
                             remoteJid: clienteDto.RemoteJid));
@@ -86,8 +86,8 @@ public sealed class ClienteService : IClienteService
     public async Task<IList<ClienteViewModel>> PaginacaoAsync(PaginacaoClienteWhatsDto paginacaoClienteWhatsDto)
     {
         var clientes = await _clienteRepository.GetPaginacaoAsync(
-            _usuarioAutenticado.EmpresaId, 
-            skip: paginacaoClienteWhatsDto.Skip, 
+            _usuarioAutenticado.EmpresaId,
+            skip: paginacaoClienteWhatsDto.Skip,
             search: paginacaoClienteWhatsDto.Search);
 
         return clientes.Select(x => (ClienteViewModel)x).ToList();

@@ -62,7 +62,7 @@ public sealed class ChatWhatsHttpService : IChatWhatsHttpService
         return JsonSerializer.Deserialize<PerfilClienteWhatsResponse>(body, JsonOptionsModel.Options);
     }
 
-    public async Task<EnviarMensagemResponse?> EnviarMensagemAsync(string instanceName, EnviarMensagemRequest enviarMensagemRequest)
+    public async Task<(EnviarMensagemResponse? Response, ErroEnvioMensagemResponse? Erro)> EnviarMensagemAsync(string instanceName, EnviarMensagemRequest enviarMensagemRequest)
     {
         var client = _httpClientFactory.CreateClient("WHATS");
         var response = await client.PostAsync($"message/sendText/{instanceName}", enviarMensagemRequest.ToJson());
@@ -70,9 +70,15 @@ public sealed class ChatWhatsHttpService : IChatWhatsHttpService
         if (!response.IsSuccessStatusCode)
         {
             Console.WriteLine($"Erro evolution api: {body}");
-            return null;
+            var responseErro = JsonSerializer.Deserialize<ErroEnvioMensagemResponse>(body, JsonOptionsModel.Options);
+            if (responseErro != null)
+            {
+                return (null, responseErro);
+            }
+
+            return (null, null);
         }
-        return JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options);
+        return (JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options), null);
     }
 
     public async Task<ConvertAudioResponse?> ConvertAudioMensagemAsync(string instanceName, ConvertAudioRequest convertAudioRequest)
@@ -92,29 +98,41 @@ public sealed class ChatWhatsHttpService : IChatWhatsHttpService
         return JsonSerializer.Deserialize<ConvertAudioResponse>(body, JsonOptionsModel.Options);
     }
 
-    public async Task<EnviarMensagemResponse?> EnviarAudioAsync(string instanceName, EnviarAudioRequest enviarAudioRequest)
+    public async Task<(EnviarMensagemResponse? Response, ErroEnvioMensagemResponse? Erro)> EnviarAudioAsync(string instanceName, EnviarAudioRequest enviarAudioRequest)
     {
         var client = _httpClientFactory.CreateClient("WHATS");
         var response = await client.PostAsync($"/message/sendWhatsAppAudio/{instanceName}", enviarAudioRequest.ToJson());
-            var body = await response.Content.ReadAsStringAsync();
+        var body = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
-            Console.WriteLine(body);
-            return null;
+            Console.WriteLine($"Erro evolution api: {body}");
+            var responseErro = JsonSerializer.Deserialize<ErroEnvioMensagemResponse>(body, JsonOptionsModel.Options);
+            if (responseErro != null)
+            {
+                return (null, responseErro);
+            }
+
+            return (null, null);
         }
-        return JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options);
+        return (JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options), null);
     }
 
-    public async Task<EnviarMensagemResponse?> EnviaImagemAsync(string instanceName, EnviarImagemRequest enviarImagemRequest)
+    public async Task<(EnviarMensagemResponse? Response, ErroEnvioMensagemResponse? Erro)> EnviaImagemAsync(string instanceName, EnviarImagemRequest enviarImagemRequest)
     {
         var client = _httpClientFactory.CreateClient("WHATS");
         var response = await client.PostAsync($"/message/sendMedia/{instanceName}", enviarImagemRequest.ToJson());
         var body = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
-            Console.WriteLine(body);
-            return null;
+            Console.WriteLine($"Erro evolution api: {body}");
+            var responseErro = JsonSerializer.Deserialize<ErroEnvioMensagemResponse>(body, JsonOptionsModel.Options);
+            if (responseErro != null)
+            {
+                return (null, responseErro);
+            }
+
+            return (null, null);
         }
-        return JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options);
+        return (JsonSerializer.Deserialize<EnviarMensagemResponse>(body, JsonOptionsModel.Options), null);
     }
 }

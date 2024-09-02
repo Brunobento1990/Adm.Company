@@ -3,6 +3,7 @@ using System;
 using Adm.Company.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Adm.Company.Infrastructure.Migrations
 {
     [DbContext(typeof(AdmCompanyContext))]
-    partial class AdmCompanyContextModelSnapshot : ModelSnapshot
+    [Migration("20240901142509_ConfiguracaoMigration")]
+    partial class ConfiguracaoMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -181,8 +184,7 @@ namespace Adm.Company.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Numero"));
 
                     b.Property<string>("PrimeiraMensagem")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("text");
 
                     b.Property<Guid?>("UsuarioId")
                         .HasColumnType("uuid");

@@ -14,6 +14,12 @@ public sealed class ConfiguracaoAtendimentoEmpresaRepository : IConfiguracaoAten
         _admCompanyContext = admCompanyContext;
     }
 
+    public async Task AddAsync(ConfiguracaoAtendimentoEmpresa configuracaoAtendimentoEmpresa)
+    {
+        await _admCompanyContext.AddAsync(configuracaoAtendimentoEmpresa);
+        await _admCompanyContext.SaveChangesAsync();
+    }
+
     public async Task<ConfiguracaoAtendimentoEmpresa?> GetConfiguracaoAtendimentoEmpresaByEmpresaIdAsync(Guid empresaId)
     {
         return await _admCompanyContext
@@ -30,5 +36,11 @@ public sealed class ConfiguracaoAtendimentoEmpresaRepository : IConfiguracaoAten
             .ConfiguracaoAtendimentoEmpresa
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.WhatsApp ==  numeroWhats);
+    }
+
+    public async Task UpdateAsync(ConfiguracaoAtendimentoEmpresa configuracaoAtendimentoEmpresa)
+    {
+        _admCompanyContext.Update(configuracaoAtendimentoEmpresa);
+        await _admCompanyContext.SaveChangesAsync();
     }
 }

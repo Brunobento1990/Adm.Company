@@ -12,5 +12,8 @@ public class ConfiguracaoAtendimentoEmpresaConfiguration : BaseEntityConfigurati
         builder.Property(x => x.WhatsApp)
             .IsRequired()
             .HasMaxLength(13);
+
+        builder.Property(x => x.PrimeiraMensagem)
+            .HasMaxLength(1000);
     }
 }

@@ -32,26 +32,36 @@ public sealed class WhatsServiceInstanceService : IWhatsServiceInstanceService
         var configuracaoWhats = await GetConfiguracaoAtendimentoEmpresaAsync();
         var result = await _whatsHttpService.ConnectInstanceAsync(configuracaoWhats.WhatsApp);
 
-        if (result != null && result.Instance != null && (result.Instance.State == "connected" || result.Instance.State == "open"))
+        if (result != null && result.Instance != null && !string.IsNullOrWhiteSpace(result.Instance.State))
         {
+            if (result.Instance.State != "open")
+            {
+                var resultConecao1 = await _whatsHttpService.GetConnectInstanceAsync(configuracaoWhats.WhatsApp);
+                if (resultConecao1 != null)
+                {
+                    return new()
+                    {
+                        QrCode = resultConecao1.Base64,
+                        Status = result.Instance.State
+                    };
+                }
+            }
+
             return new()
             {
                 QrCode = string.Empty,
-                Status = 200
+                Status = result.Instance.State
             };
         }
 
-        if (result != null && result.Instance != null && (result.Instance.State == "connecting" || result.Instance.State == "close"))
+        var resultConecao = await _whatsHttpService.GetConnectInstanceAsync(configuracaoWhats.WhatsApp);
+        if (resultConecao != null)
         {
-            var resultConecao = await _whatsHttpService.GetConnectInstanceAsync(configuracaoWhats.WhatsApp);
-            if (resultConecao != null)
+            return new()
             {
-                return new()
-                {
-                    QrCode = resultConecao.Base64,
-                    Status = 201
-                };
-            }
+                QrCode = resultConecao.Base64,
+                Status = "closed"
+            };
         }
 
         var resultCreate = await _whatsHttpService.CreateInstanceAsync(new CreateInstanceResponse()
@@ -69,7 +79,7 @@ public sealed class WhatsServiceInstanceService : IWhatsServiceInstanceService
                 return new()
                 {
                     QrCode = resultConecao2.Base64,
-                    Status = 201
+                    Status = resultCreate.Instance.Status
                 };
             }
         }

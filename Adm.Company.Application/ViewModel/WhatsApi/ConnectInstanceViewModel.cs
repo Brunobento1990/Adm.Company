@@ -3,5 +3,5 @@
 public class ConnectInstanceViewModel
 {
     public string QrCode { get; set; } = string.Empty;
-    public int Status { get; set; }
+    public string Status { get; set; } = string.Empty;
 }

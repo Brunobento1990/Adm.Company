@@ -6,4 +6,6 @@ public interface IConfiguracaoAtendimentoEmpresaRepository
 {
     Task<ConfiguracaoAtendimentoEmpresa?> GetConfiguracaoAtendimentoEmpresaByEmpresaIdAsync(Guid empresaId);
     Task<ConfiguracaoAtendimentoEmpresa?> GetConfiguracaoAtendimentoEmpresaByNumeroWhtasAsync(string numeroWhats);
+    Task AddAsync(ConfiguracaoAtendimentoEmpresa configuracaoAtendimentoEmpresa);
+    Task UpdateAsync(ConfiguracaoAtendimentoEmpresa configuracaoAtendimentoEmpresa);
 }

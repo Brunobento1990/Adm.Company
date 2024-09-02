@@ -7,6 +7,7 @@ using Adm.Company.Domain.Exceptions;
 using Adm.Company.Domain.Interfaces;
 using Adm.Company.Infrastructure.HttpServices.Interfaces;
 using Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
+using Adm.Company.Infrastructure.HttpServices.Responses.WhatsApi;
 using static Adm.Company.Domain.Entities.MensagemAtendimento;
 
 namespace Adm.Company.Application.Services.Atendimentos;
@@ -18,19 +19,22 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
     private readonly IUsuarioAutenticado _usuarioAutenticado;
     private readonly IMensagemAtendimentoRepository _mensagemAtendimentoRepository;
     private readonly IChatWhatsHttpService _chatWhatsHttpService;
+    private readonly IWhatsHttpService _whatsHttpService;
 
     public EnviarMensagemAtendimentoService(
         IAtendimentoRepository atendimentoRepository,
         IConfiguracaoAtendimentoEmpresaRepository configuracaoAtendimentoEmpresaRepository,
         IUsuarioAutenticado usuarioAutenticado,
         IMensagemAtendimentoRepository mensagemAtendimentoRepository,
-        IChatWhatsHttpService chatWhatsHttpService)
+        IChatWhatsHttpService chatWhatsHttpService,
+        IWhatsHttpService whatsHttpService)
     {
         _atendimentoRepository = atendimentoRepository;
         _configuracaoAtendimentoEmpresaRepository = configuracaoAtendimentoEmpresaRepository;
         _usuarioAutenticado = usuarioAutenticado;
         _mensagemAtendimentoRepository = mensagemAtendimentoRepository;
         _chatWhatsHttpService = chatWhatsHttpService;
+        _whatsHttpService = whatsHttpService;
     }
 
     public async Task<MensagemAtendimentoViewModel> EnviarMensagemAsync(
@@ -69,7 +73,7 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
             status: StatusMensagem.Enviado,
             imagem: imagem,
             figurinha: figurinha,
-            descricaoFoto: enviarMensagemAtendimentoDto.Mensagem);
+            descricaoFoto: imagem != null ? enviarMensagemAtendimentoDto.Mensagem : null);
 
         await _mensagemAtendimentoRepository.AddAsync(mensagemAtendimento);
 
@@ -85,33 +89,52 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
     {
         if (!string.IsNullOrWhiteSpace(audio))
         {
-            var response = await _chatWhatsHttpService.EnviarAudioAsync(instanceName, new EnviarAudioRequest()
+            var (response, erroAudio) = await _chatWhatsHttpService.EnviarAudioAsync(instanceName, new EnviarAudioRequest()
             {
                 Audio = audio,
                 Number = remoteJid
             });
+
+            await TratarErroEnvioMensagem(erroAudio, instanceName);
 
             return response?.Key?.Id;
         }
 
         if (!string.IsNullOrWhiteSpace(imagem))
         {
-            var response = await _chatWhatsHttpService.EnviaImagemAsync(instanceName, new EnviarImagemRequest()
+            var (response, erroImagem) = await _chatWhatsHttpService.EnviaImagemAsync(instanceName, new EnviarImagemRequest()
             {
                 Number = remoteJid,
                 Caption = mensagem,
                 Media = imagem,
             });
 
+            await TratarErroEnvioMensagem(erroImagem, instanceName);
+
             return response?.Key?.Id;
         }
 
-        var result = await _chatWhatsHttpService.EnviarMensagemAsync(instanceName, new EnviarMensagemRequest()
+        var (result, erro) = await _chatWhatsHttpService.EnviarMensagemAsync(instanceName, new EnviarMensagemRequest()
         {
             Number = remoteJid,
             Text = mensagem
         });
 
+        await TratarErroEnvioMensagem(erro, instanceName);
+
         return result?.Key?.Id;
+    }
+
+    private async Task TratarErroEnvioMensagem(ErroEnvioMensagemResponse? erro, string instanceName)
+    {
+        if (erro != null)
+        {
+            if (erro.Status == 500 && erro.Response?.Message == "Connection Closed")
+            {
+                await _whatsHttpService.LogoutInstanceAsync(instanceName);
+                await _whatsHttpService.DeleteInstanceAsync(instanceName);
+                throw new ExceptionApiErro("É necessário conectar ao whats app novamente!");
+            }
+        }
     }
 }

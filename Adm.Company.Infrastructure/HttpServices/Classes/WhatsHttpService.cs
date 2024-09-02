@@ -54,4 +54,46 @@ public sealed class WhatsHttpService : IWhatsHttpService
         }
         return JsonSerializer.Deserialize<InstanceConnectingResponse>(body, JsonOptionsModel.Options);
     }
+
+    public async Task<bool> LogoutInstanceAsync(string instanceName)
+    {
+        var client = _httpClientFactory.CreateClient("WHATS");
+        var response = await client.DeleteAsync($"{URL_CONNECT_INSTANCE}logout/{instanceName}");
+        var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Erro evolution api: {body}");
+            return false;
+        }
+
+        var result = JsonSerializer.Deserialize<LogoutInstanceResponse>(body, JsonOptionsModel.Options);
+
+        if (result == null)
+        {
+            return false;
+        }
+
+        return result.Error;
+    }
+
+    public async Task<bool> DeleteInstanceAsync(string instanceName)
+    {
+        var client = _httpClientFactory.CreateClient("WHATS");
+        var response = await client.DeleteAsync($"{URL_CONNECT_INSTANCE}delete/{instanceName}");
+        var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Erro evolution api: {body}");
+            return false;
+        }
+
+        var result = JsonSerializer.Deserialize<LogoutInstanceResponse>(body, JsonOptionsModel.Options);
+
+        if (result == null)
+        {
+            return false;
+        }
+
+        return result.Error;
+    }
 }
