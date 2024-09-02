@@ -1,7 +1,6 @@
 ﻿using Adm.Company.Application.Dtos.Atendimentos;
-using Adm.Company.Application.Interfaces.Atendimento;
+using Adm.Company.Application.Interfaces.Atendimentos;
 using Adm.Company.Application.ViewModel.Atendimentos;
-using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Enums;
 using Adm.Company.Domain.Exceptions;
 using Adm.Company.Domain.Interfaces;
@@ -89,6 +88,11 @@ public sealed class AtendimentoService : IAtendimentoService
     {
         var atendimento = await _atendimentoRepository.GetByIdAsync(atendimentoId)
             ?? throw new ExceptionApiErro("Não foi possível localizar o atendimento!");
+
+        if (atendimento.UsuarioId.HasValue)
+        {
+            throw new ExceptionApiErro("Este atendimento já se encontra com outro usuário!");
+        }
 
         atendimento.IniciarAtendimento(_usuarioAutenticado.Id);
         await _atendimentoRepository.UpdateAsync(atendimento);

@@ -1,6 +1,6 @@
 ﻿using Adm.Company.Application.ViewModel.Atendimentos;
 
-namespace Adm.Company.Application.Interfaces.Atendimento;
+namespace Adm.Company.Application.Interfaces.Atendimentos;
 
 public interface IMensagemAtendimentoService
 {

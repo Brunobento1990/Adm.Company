@@ -18,7 +18,9 @@ public sealed class MensagemAtendimento : BaseEntity
         byte[]? audio,
         byte[]? imagem,
         byte[]? figurinha,
-        string? descricaoFoto)
+        string? descricaoFoto,
+        string? resposta,
+        string? respostaId)
             : base(id, criadoEm, atualizadoEm, numero)
     {
         Mensagem = mensagem;
@@ -31,6 +33,8 @@ public sealed class MensagemAtendimento : BaseEntity
         Imagem = imagem;
         Figurinha = figurinha;
         DescricaoFoto = descricaoFoto;
+        Resposta = resposta;
+        RespostaId = respostaId;
     }
 
     public void UpdateStatus(StatusMensagem statusMensagem)
@@ -49,6 +53,8 @@ public sealed class MensagemAtendimento : BaseEntity
     public byte[]? Imagem { get; private set; }
     public byte[]? Figurinha { get; private set; }
     public string? DescricaoFoto { get; private set; }
+    public string? Resposta { get; private set; }
+    public string? RespostaId { get; private set; }
 
     public class FabricaMensagem
     {
@@ -61,7 +67,9 @@ public sealed class MensagemAtendimento : BaseEntity
             StatusMensagem status,
             byte[]? figurinha,
             byte[]? imagem,
-            string? descricaoFoto)
+            string? descricaoFoto,
+            string? resposta,
+            string? respostaId)
         {
             string tipoMensagem = nameof(TipoMensagemEnum.conversation);
 
@@ -94,7 +102,9 @@ public sealed class MensagemAtendimento : BaseEntity
                 audio: audio,
                 figurinha: figurinha,
                 imagem: imagem,
-                descricaoFoto: descricaoFoto);
+                descricaoFoto: descricaoFoto,
+                resposta: resposta,
+                respostaId: respostaId);
         }
     }
 }

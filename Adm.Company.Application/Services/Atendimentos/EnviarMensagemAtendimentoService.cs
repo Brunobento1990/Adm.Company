@@ -1,7 +1,8 @@
 ﻿using Adm.Company.Application.Dtos.Atendimentos;
 using Adm.Company.Application.Helpers;
-using Adm.Company.Application.Interfaces.Atendimento;
+using Adm.Company.Application.Interfaces.Atendimentos;
 using Adm.Company.Application.ViewModel.Atendimentos;
+using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Enums;
 using Adm.Company.Domain.Exceptions;
 using Adm.Company.Domain.Interfaces;
@@ -48,12 +49,14 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
                 .GetConfiguracaoAtendimentoEmpresaByEmpresaIdAsync(_usuarioAutenticado.EmpresaId)
             ?? throw new ExceptionApiErro("Não foi possível localizar as configurações de atendimento!");
 
-        var result = await EnviarMensagemAsync(
+        var result = await EnviarMensagemLocalAsync(
             instanceName: configuracaoAtendimento.WhatsApp,
             remoteJid: atendimento.Cliente.RemoteJid ?? string.Empty,
             mensagem: enviarMensagemAtendimentoDto.Mensagem,
             audio: enviarMensagemAtendimentoDto.Audio,
-            imagem: enviarMensagemAtendimentoDto.Imagem);
+            imagem: enviarMensagemAtendimentoDto.Imagem,
+            resposta: enviarMensagemAtendimentoDto.Resposta,
+            respostaId: enviarMensagemAtendimentoDto.RespostaId);
 
         if (string.IsNullOrWhiteSpace(result))
         {
@@ -73,26 +76,97 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
             status: StatusMensagem.Enviado,
             imagem: imagem,
             figurinha: figurinha,
-            descricaoFoto: imagem != null ? enviarMensagemAtendimentoDto.Mensagem : null);
+            descricaoFoto: imagem != null ? enviarMensagemAtendimentoDto.Mensagem : null,
+            resposta: enviarMensagemAtendimentoDto.Resposta,
+            respostaId: enviarMensagemAtendimentoDto.RespostaId?.ToString());
 
         await _mensagemAtendimentoRepository.AddAsync(mensagemAtendimento);
 
         return (MensagemAtendimentoViewModel)mensagemAtendimento;
     }
 
-    private async Task<string?> EnviarMensagemAsync(
+    public async Task<MensagemAtendimentoViewModel> EnviarPrimeiraMensagemMensagemAsync(
+        string remoteJid,
+        ConfiguracaoAtendimentoEmpresa configuracaoAtendimento,
+        Atendimento atendimento)
+    {
+        if (!string.IsNullOrWhiteSpace(configuracaoAtendimento.PrimeiraMensagem))
+        {
+            var result = await EnviarMensagemLocalAsync(
+            instanceName: configuracaoAtendimento.WhatsApp,
+            remoteJid: remoteJid,
+            mensagem: configuracaoAtendimento.PrimeiraMensagem,
+            audio: null,
+            imagem: null,
+            resposta: null,
+            respostaId: null);
+
+
+            if (!string.IsNullOrWhiteSpace(result))
+            {
+                var mensagemAtendimento = FabricaMensagem.Fabricar(
+                mensagem: configuracaoAtendimento.PrimeiraMensagem,
+                minhaMensagem: true,
+                remoteId: result,
+                atendimentoId: atendimento.Id,
+                audio: null,
+                status: StatusMensagem.Enviado,
+                imagem: null,
+                figurinha: null,
+                descricaoFoto: null,
+                resposta: null,
+                respostaId: null);
+
+                await _mensagemAtendimentoRepository.AddAsync(mensagemAtendimento);
+
+                return (MensagemAtendimentoViewModel)mensagemAtendimento;
+            }
+        }
+
+        return new();
+    }
+
+    private async Task<string?> EnviarMensagemLocalAsync(
         string instanceName,
         string remoteJid,
         string mensagem,
         string? audio,
-        string? imagem)
+        string? imagem,
+        string? resposta,
+        Guid? respostaId)
     {
+
+        Quoted? quoted = null;
+
+        if (respostaId.HasValue && !string.IsNullOrWhiteSpace(resposta))
+        {
+            var mensagemAtendimento = await _mensagemAtendimentoRepository.GetByIdAsync(respostaId.Value);
+
+            if (mensagemAtendimento != null)
+            {
+                quoted = new Quoted()
+                {
+                    Key = new QuotedKey()
+                    {
+                        FromMe = true,
+                        RemoteJid = remoteJid,
+                        Id = mensagemAtendimento.RemoteId
+                    },
+                    QuotedMessage = new()
+                    {
+                        Conversation = resposta
+                    }
+                };
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(audio))
         {
             var (response, erroAudio) = await _chatWhatsHttpService.EnviarAudioAsync(instanceName, new EnviarAudioRequest()
             {
                 Audio = audio,
-                Number = remoteJid
+                Number = remoteJid,
+                Quoted = quoted
             });
 
             await TratarErroEnvioMensagem(erroAudio, instanceName);
@@ -107,6 +181,7 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
                 Number = remoteJid,
                 Caption = mensagem,
                 Media = imagem,
+                Quoted = quoted
             });
 
             await TratarErroEnvioMensagem(erroImagem, instanceName);
@@ -117,7 +192,8 @@ public sealed class EnviarMensagemAtendimentoService : IEnviarMensagemAtendiment
         var (result, erro) = await _chatWhatsHttpService.EnviarMensagemAsync(instanceName, new EnviarMensagemRequest()
         {
             Number = remoteJid,
-            Text = mensagem
+            Text = mensagem,
+            Quoted = quoted
         });
 
         await TratarErroEnvioMensagem(erro, instanceName);

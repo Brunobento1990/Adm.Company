@@ -17,6 +17,8 @@ public class MensagemAtendimentoViewModel : BaseViewModel
     public string? Imagem { get; set; }
     public string? Figurinha { get; set; }
     public string? DescricaoFoto { get; set; }
+    public string? Resposta { get; set; }
+    public string? RespostaId { get; set; }
 
     public static explicit operator MensagemAtendimentoViewModel(MensagemAtendimento mensagemAtendimento)
     {
@@ -35,7 +37,9 @@ public class MensagemAtendimentoViewModel : BaseViewModel
             Audio = mensagemAtendimento.Audio?.ConverterBytesParaString(),
             Imagem = mensagemAtendimento.Imagem?.ConverterBytesParaString(),
             Figurinha = mensagemAtendimento.Figurinha?.ConverterBytesParaString(),
-            DescricaoFoto = mensagemAtendimento.DescricaoFoto
+            DescricaoFoto = mensagemAtendimento.DescricaoFoto,
+            Resposta = mensagemAtendimento.Resposta,
+            RespostaId = mensagemAtendimento.RespostaId
         };
     }
 }

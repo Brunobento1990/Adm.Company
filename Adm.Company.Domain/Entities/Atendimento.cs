@@ -98,7 +98,8 @@ public sealed class Atendimento : BaseEntityEmpresa
             byte[]? audio,
             byte[]? figurinha,
             byte[]? imagem,
-            string? descricaoFoto)
+            string? descricaoFoto,
+            Guid? usuarioId)
         {
             var atendimento = new Atendimento(
                 id: Guid.NewGuid(),
@@ -106,8 +107,8 @@ public sealed class Atendimento : BaseEntityEmpresa
                 atualizadoEm: DateTime.Now,
                 numero: 0,
                 empresaId: empresaId,
-                status: StatusAtendimento.Aberto,
-                usuarioId: null,
+                status: usuarioId.HasValue ? StatusAtendimento.EmAndamento : StatusAtendimento.Aberto,
+                usuarioId: usuarioId,
                 usuarioCancelamentoId: null,
                 observacao: null,
                 motivoCancelamento: null,
@@ -123,7 +124,9 @@ public sealed class Atendimento : BaseEntityEmpresa
                 status: StatusMensagem.Entregue,
                 figurinha: figurinha,
                 imagem: imagem,
-                descricaoFoto: descricaoFoto));
+                descricaoFoto: descricaoFoto,
+                resposta: null,
+                respostaId: null));
 
             return atendimento;
         }

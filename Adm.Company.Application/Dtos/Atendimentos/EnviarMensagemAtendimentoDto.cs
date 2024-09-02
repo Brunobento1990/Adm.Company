@@ -7,4 +7,6 @@ public class EnviarMensagemAtendimentoDto
     public string? Audio { get; set; }
     public string? Imagem { get; set; }
     public string? Figurinha { get; set; }
+    public string? Resposta { get; set; }
+    public Guid? RespostaId { get; set; }
 }

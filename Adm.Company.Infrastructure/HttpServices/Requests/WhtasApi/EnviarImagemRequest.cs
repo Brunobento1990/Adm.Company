@@ -10,6 +10,7 @@ public class EnviarImagemRequest
     public string Media { get; set; } = string.Empty;
     public string? Caption { get; set; } = string.Empty;
     public string Mediatype { get; set; } = "image";
+    public Quoted? Quoted { get; set; }
 
     public StringContent ToJson()
     {

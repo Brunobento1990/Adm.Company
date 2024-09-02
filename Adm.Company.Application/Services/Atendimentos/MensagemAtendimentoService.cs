@@ -1,4 +1,4 @@
-﻿using Adm.Company.Application.Interfaces.Atendimento;
+﻿using Adm.Company.Application.Interfaces.Atendimentos;
 using Adm.Company.Application.ViewModel.Atendimentos;
 using Adm.Company.Domain.Enums;
 using Adm.Company.Domain.Interfaces;

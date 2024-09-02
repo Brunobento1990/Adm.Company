@@ -8,7 +8,7 @@ public class EnviarAudioRequest
 {
     public string Number { get; set; } = string.Empty;
     public string Audio { get; set; } = string.Empty;
-
+    public Quoted? Quoted { get; set; }
 
     public StringContent ToJson()
     {
@@ -19,4 +19,22 @@ public class EnviarAudioRequest
                 Encoding.UTF8,
                 "application/json");
     }
+}
+
+public class Quoted
+{
+    public QuotedKey? Key { get; set; }
+    public QuotedMessage? QuotedMessage { get; set; }
+}
+
+public class QuotedKey
+{
+    public string RemoteJid { get; set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
+    public bool FromMe { get; set; }
+}
+
+public class QuotedMessage
+{
+    public string Conversation { get; set; } = string.Empty;
 }

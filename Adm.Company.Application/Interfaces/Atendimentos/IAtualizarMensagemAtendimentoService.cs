@@ -1,4 +1,4 @@
-﻿namespace Adm.Company.Application.Interfaces.Atendimento;
+﻿namespace Adm.Company.Application.Interfaces.Atendimentos;
 
 public interface IAtualizarMensagemAtendimentoService
 {

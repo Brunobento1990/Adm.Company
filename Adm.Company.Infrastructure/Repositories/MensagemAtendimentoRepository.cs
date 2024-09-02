@@ -31,6 +31,14 @@ public sealed class MensagemAtendimentoRepository : IMensagemAtendimentoReposito
             .ExecuteUpdateAsync(x => x.SetProperty(y => y.Status, status));
     }
 
+    public async Task<MensagemAtendimento?> GetByIdAsync(Guid id)
+    {
+        return await _admCompanyContext
+            .MensagemAtendimentos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<MensagemAtendimento?> GetByRemoteIdAsync(string remoteId)
     {
         return await _admCompanyContext

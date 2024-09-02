@@ -1,13 +1,12 @@
 ﻿using Adm.Company.Application.Hubs;
 using Adm.Company.Application.Interfaces;
-using Adm.Company.Application.Interfaces.Atendimento;
+using Adm.Company.Application.Interfaces.Atendimentos;
 using Adm.Company.Application.ViewModel.WhatsApi;
 using Adm.Company.Domain.Enums;
 using Adm.Company.Infrastructure.HttpServices.Requests.WhtasApi;
 using Adm.Company.Infrastructure.HttpServices.Responses.WhatsApi;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using System.Text.Json;
 
 namespace Adm.Company.Api.Controllers;
 
@@ -64,15 +63,7 @@ public class WebHookWhatsController : ControllerBase
         if (body != null && body.Data != null && body.Data.Key != null && !body.Data.Key.FromMe)
         {
             await _webHookAtendimentoService
-                .CreateOrUpdateAtendimentoWebHookAsync(
-                    mensagem: body.Data.Message?.ExtendedTextMessage?.Text != null ? body.Data.Message.ExtendedTextMessage.Text : body.Data.Message?.Conversation ?? string.Empty,
-                    numeroWhatsEmpresa: body.Instance,
-                    numeroWhatsOrigem: body.Data.Key.RemoteJid,
-                    remoteId: body.Data.Key.Id,
-                    tipoMensagem: body.Data.MessageType,
-                    nome: body.Data.PushName,
-                    fromMe: body.Data.Key.FromMe,
-                    caption: body.Data.Message?.ImageMessage?.Caption);
+                .CreateOrUpdateAtendimentoWebHookAsync(body);
         }
         return Ok();
     }

@@ -1,6 +1,6 @@
 ﻿using Adm.Company.Application.Helpers;
 using Adm.Company.Application.Hubs;
-using Adm.Company.Application.Interfaces.Atendimento;
+using Adm.Company.Application.Interfaces.Atendimentos;
 using Adm.Company.Domain.Enums;
 using Adm.Company.Domain.Interfaces;
 using Microsoft.AspNetCore.SignalR;

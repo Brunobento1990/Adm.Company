@@ -1,5 +1,5 @@
 ﻿using Adm.Company.Application.Interfaces;
-using Adm.Company.Application.Interfaces.Atendimento;
+using Adm.Company.Application.Interfaces.Atendimentos;
 using Adm.Company.Application.ViewModel.WhatsApi;
 using Adm.Company.Domain.Entities;
 using Adm.Company.Domain.Exceptions;

@@ -1,7 +1,7 @@
 ﻿using Adm.Company.Application.Dtos.Atendimentos;
 using Adm.Company.Application.ViewModel.Atendimentos;
 
-namespace Adm.Company.Application.Interfaces.Atendimento;
+namespace Adm.Company.Application.Interfaces.Atendimentos;
 
 public interface IAtendimentoService
 {

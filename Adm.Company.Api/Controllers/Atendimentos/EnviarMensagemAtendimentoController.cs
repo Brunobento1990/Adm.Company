@@ -1,6 +1,6 @@
 ﻿using Adm.Company.Api.Attributes;
 using Adm.Company.Application.Dtos.Atendimentos;
-using Adm.Company.Application.Interfaces.Atendimento;
+using Adm.Company.Application.Interfaces.Atendimentos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Adm.Company.Api.Controllers.Atendimentos;
