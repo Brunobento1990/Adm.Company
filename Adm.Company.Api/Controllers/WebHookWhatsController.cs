@@ -65,7 +65,7 @@ public class WebHookWhatsController : ControllerBase
         {
             await _webHookAtendimentoService
                 .CreateOrUpdateAtendimentoWebHookAsync(
-                    mensagem: body.Data.Message?.Conversation ?? string.Empty,
+                    mensagem: body.Data.Message?.ExtendedTextMessage?.Text != null ? body.Data.Message.ExtendedTextMessage.Text : body.Data.Message?.Conversation ?? string.Empty,
                     numeroWhatsEmpresa: body.Instance,
                     numeroWhatsOrigem: body.Data.Key.RemoteJid,
                     remoteId: body.Data.Key.Id,

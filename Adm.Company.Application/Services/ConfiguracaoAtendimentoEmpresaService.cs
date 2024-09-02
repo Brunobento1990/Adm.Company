@@ -29,8 +29,18 @@ public sealed class ConfiguracaoAtendimentoEmpresaService : IConfiguracaoAtendim
     public async Task<ConfiguracaoAtendimentoEmpresaViewModel> CreateOrUpdateAsync(
         ConfiguracaoAtendimentoEmpresaDto configuracaoAtendimentoEmpresaDto)
     {
+        configuracaoAtendimentoEmpresaDto.Validar();
+
         var configuracao = await _configuracaoAtendimentoEmpresaRepository
             .GetConfiguracaoAtendimentoEmpresaByEmpresaIdAsync(empresaId: _usuarioAutenticado.EmpresaId);
+
+        var configuracaoWhats = await _configuracaoAtendimentoEmpresaRepository
+            .GetConfiguracaoAtendimentoEmpresaByNumeroWhtasAsync(numeroWhats: configuracaoAtendimentoEmpresaDto.WhatsApp);
+
+        if (configuracaoWhats != null && configuracaoWhats.EmpresaId != _usuarioAutenticado.EmpresaId)
+        {
+            throw new ExceptionApiErro($"Este número já se encontra cadastrado: {configuracaoAtendimentoEmpresaDto.WhatsApp}");
+        }
 
         if (configuracaoAtendimentoEmpresaDto.UsuarioId.HasValue)
         {
@@ -46,7 +56,7 @@ public sealed class ConfiguracaoAtendimentoEmpresaService : IConfiguracaoAtendim
                 atualizadoEm: DateTime.Now,
                 numero: 0,
                 empresaId: _usuarioAutenticado.EmpresaId,
-                whatsApp: configuracaoAtendimentoEmpresaDto.NumeroWhats,
+                whatsApp: configuracaoAtendimentoEmpresaDto.WhatsApp,
                 primeiraMensagem: configuracaoAtendimentoEmpresaDto.PrimeiraMensagem,
                 usuarioId: configuracaoAtendimentoEmpresaDto.UsuarioId);
 
@@ -55,25 +65,14 @@ public sealed class ConfiguracaoAtendimentoEmpresaService : IConfiguracaoAtendim
             return (ConfiguracaoAtendimentoEmpresaViewModel)configuracao;
         }
 
-        if (configuracao.WhatsApp != configuracaoAtendimentoEmpresaDto.NumeroWhats)
+        if (configuracao.WhatsApp != configuracaoAtendimentoEmpresaDto.WhatsApp)
         {
-            var resultLogout = await _whatsHttpService.LogoutInstanceAsync(configuracao.WhatsApp);
-
-            if (!resultLogout)
-            {
-                throw new ExceptionApiErro("Não foi possível efetuar o logout do whats");
-            }
-
-            var resultDelete = await _whatsHttpService.DeleteInstanceAsync(configuracao.WhatsApp);
-
-            if (!resultDelete)
-            {
-                throw new ExceptionApiErro("Não foi possível efetuar a exclusão do whats");
-            }
+            await _whatsHttpService.LogoutInstanceAsync(configuracao.WhatsApp);
+            await _whatsHttpService.DeleteInstanceAsync(configuracao.WhatsApp);
         }
 
         configuracao.Update(
-            whatsApp: configuracaoAtendimentoEmpresaDto.NumeroWhats,
+            whatsApp: configuracaoAtendimentoEmpresaDto.WhatsApp,
             primeiraMensagem: configuracaoAtendimentoEmpresaDto.PrimeiraMensagem,
             usuarioId: configuracaoAtendimentoEmpresaDto.UsuarioId);
 
@@ -92,6 +91,17 @@ public sealed class ConfiguracaoAtendimentoEmpresaService : IConfiguracaoAtendim
             return new();
         }
 
-        return (ConfiguracaoAtendimentoEmpresaViewModel)configuracao;
+        var configuracaoViewModel = (ConfiguracaoAtendimentoEmpresaViewModel)configuracao;
+
+        if (configuracao.UsuarioId.HasValue)
+        {
+            var usuario = await _usuarioRepository.GetByIdAsync(configuracao.UsuarioId.Value);
+            if(usuario != null)
+            {
+                configuracaoViewModel.Usuario = (UsuarioViewModel)usuario;
+            }
+        }
+
+        return configuracaoViewModel;
     }
 }

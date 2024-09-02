@@ -21,6 +21,7 @@ public static class ServicesDependencyInject
         services.AddScoped<IMensagemAtendimentoService, MensagemAtendimentoService>();
         services.AddScoped<IClienteService, ClienteService>();
         services.AddScoped<IConfiguracaoAtendimentoEmpresaService, ConfiguracaoAtendimentoEmpresaService>();
+        services.AddScoped<IUsuarioService, UsuarioService>();
 
         return services;
     }

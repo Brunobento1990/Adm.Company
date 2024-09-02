@@ -12,6 +12,9 @@ public class UsuarioConfiguration : BasePessoaConfiguration<Usuario>
         builder.Property(x => x.Senha)
             .IsRequired()
             .HasMaxLength(1000);
+        builder.Property(x => x.Nome)
+            .IsRequired()
+            .HasMaxLength(255);
         builder.Property(x => x.Bloqueado)
             .IsRequired();
     }

@@ -18,6 +18,7 @@ var keyJwt = VariaveisDeAmbiente.GetVariavel("JWT_KEY");
 var issue = VariaveisDeAmbiente.GetVariavel("JWT_ISSUE");
 var audience = VariaveisDeAmbiente.GetVariavel("JWT_AUDIENCE");
 var expirate = int.Parse(VariaveisDeAmbiente.GetVariavel("JWT_EXPIRATION"));
+var ip = int.Parse(VariaveisDeAmbiente.GetVariavel("IP"));
 
 ConfiguracaoJwt.Configure(keyJwt, issue, audience, expirate);
 
@@ -44,7 +45,7 @@ if (VariaveisDeAmbiente.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    app.Urls.Add("http://192.168.1.124:5022");
+    app.Urls.Add($"http://{ip}:5022");
 }
 
 app.UseCors("base");

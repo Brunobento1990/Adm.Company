@@ -12,13 +12,16 @@ public sealed class Usuario : BasePessoa
         string? whatsApp,
         string email,
         string senha,
-        bool bloqueado)
+        bool bloqueado,
+        string nome)
             : base(id, criadoEm, atualizadoEm, numero, empresaId, cpf, whatsApp, email)
     {
         Senha = senha;
         Bloqueado = bloqueado;
+        Nome = nome;
     }
 
     public string Senha { get; set; }
+    public string Nome { get; set; }
     public bool Bloqueado { get; set; }
 }

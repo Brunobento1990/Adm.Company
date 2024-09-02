@@ -28,6 +28,12 @@ public class MensagemRecebida
 {
     public string Conversation { get; set; } = string.Empty;
     public ImagemMensagem? ImageMessage { get; set; }
+    public ExtendedTextMessage? ExtendedTextMessage { get; set; }
+}
+
+public class ExtendedTextMessage
+{
+    public string? Text { get; set; }
 }
 
 public class ImagemMensagem

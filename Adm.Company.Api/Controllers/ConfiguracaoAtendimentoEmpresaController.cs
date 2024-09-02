@@ -1,4 +1,5 @@
 ﻿using Adm.Company.Api.Attributes;
+using Adm.Company.Application.Dtos.ConfiguracoesAtendimentoEmpresa;
 using Adm.Company.Application.Interfaces;
 using Adm.Company.Application.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -26,5 +27,15 @@ public class ConfiguracaoAtendimentoEmpresaController : ControllerBase
     {
         var config = await _configuracaoAtendimentoEmpresaService.GetAsync();
         return Ok(config);
+    }
+
+    [HttpPut]
+    [ProducesResponseType<ConfiguracaoAtendimentoEmpresaViewModel>(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
+    [ProducesResponseType<ErrorResponse>(400)]
+    public async Task<IActionResult> Update(ConfiguracaoAtendimentoEmpresaDto configuracaoAtendimentoEmpresaDto)
+    {
+        var result = await _configuracaoAtendimentoEmpresaService.CreateOrUpdateAsync(configuracaoAtendimentoEmpresaDto);
+        return Ok(result);
     }
 }
