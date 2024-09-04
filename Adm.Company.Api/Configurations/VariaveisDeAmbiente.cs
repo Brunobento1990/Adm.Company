@@ -23,4 +23,9 @@ public class VariaveisDeAmbiente
     {
         return Environment.GetEnvironmentVariable("AMBIENTE") == "develop";
     }
+
+    public static bool AdicionarSwagger()
+    {
+        return Environment.GetEnvironmentVariable("SWAGGER") == "true";
+    }
 }

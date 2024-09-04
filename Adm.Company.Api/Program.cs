@@ -18,7 +18,7 @@ var keyJwt = VariaveisDeAmbiente.GetVariavel("JWT_KEY");
 var issue = VariaveisDeAmbiente.GetVariavel("JWT_ISSUE");
 var audience = VariaveisDeAmbiente.GetVariavel("JWT_AUDIENCE");
 var expirate = int.Parse(VariaveisDeAmbiente.GetVariavel("JWT_EXPIRATION"));
-var ip = VariaveisDeAmbiente.GetVariavel("IP");
+var ip = VariaveisDeAmbiente.GetVariavelOrNull("IP");
 
 ConfiguracaoJwt.Configure(keyJwt, issue, audience, expirate);
 
@@ -40,11 +40,14 @@ app.UsePathBase(new PathString(basePath));
 
 app.UseRouting();
 
-if (VariaveisDeAmbiente.IsDevelopment())
+if (VariaveisDeAmbiente.AdicionarSwagger())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
 
+if (VariaveisDeAmbiente.IsDevelopment() && !string.IsNullOrWhiteSpace(ip))
+{
     app.Urls.Add($"http://{ip}:5022");
 }
 
