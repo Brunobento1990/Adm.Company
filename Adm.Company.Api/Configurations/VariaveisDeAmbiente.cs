@@ -28,4 +28,9 @@ public class VariaveisDeAmbiente
     {
         return Environment.GetEnvironmentVariable("SWAGGER") == "true";
     }
+
+    public static bool CriarDbDev()
+    {
+        return Environment.GetEnvironmentVariable("DBDEV") == "true";
+    }
 }

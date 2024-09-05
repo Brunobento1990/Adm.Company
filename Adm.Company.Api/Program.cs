@@ -1,4 +1,5 @@
 using Adm.Company.Api.Configurations;
+using Adm.Company.Application.Interfaces;
 using Adm.Company.Application.ViewModel.Jwt;
 using Adm.Company.IoC.Application;
 using Adm.Company.IoC.Context;
@@ -49,6 +50,13 @@ if (VariaveisDeAmbiente.AdicionarSwagger())
 if (VariaveisDeAmbiente.IsDevelopment() && !string.IsNullOrWhiteSpace(ip))
 {
     app.Urls.Add($"http://{ip}:5022");
+}
+
+if (VariaveisDeAmbiente.CriarDbDev())
+{
+    using var scope = app.Services.CreateScope();
+    var service = scope.ServiceProvider.GetRequiredService<IDatabaseService>();
+    await service.CriarDbDevAsync();
 }
 
 app.UseCors("base");
