@@ -2,31 +2,33 @@ version: '3.8'
 
 services:
   api:
-    image: brunobentocaina/adm-company-api
+    image: brunobentocaina/adm-company-api:latest
     container_name: adm-company-api
     ports:
       - "5022:8080"
     environment:
-      - URL_API_WHATSS=http://localhost:8074
-      - WHATS_API_KEY=11eb9679
-      - ORIGIN=http://localhost:8477
-      - CONNECTION_STRING=User ID=postgres; Password=1234; Host=localhost; Port=4450; Database=adm-company-hml; Pooling=true;
-      - JWT_KEY=bce00242441ba1650f3e
-      - JWT_ISSUE=ISSUE
-      - JWT_AUDIENCE=ADMCOMPANYAUDIENCE
-      - JWT_EXPIRATION=24
+        URL_API_WHATSS: "http://localhost:8074"
+        WHATS_API_KEY: "11eb9679"
+        ORIGIN: "http://localhost:8477"
+        CONNECTION_STRING : "User ID=postgres; Password=1234; Host=postgres_db; Port=5432; Database=adm-company-hml; Pooling=true;"
+        JWT_KEY: "bce00242441ba1650f3e"
+        JWT_ISSUE: "ISSUE"
+        JWT_AUDIENCE: "ADMCOMPANYAUDIENCE"
+        JWT_EXPIRATION: "24"
+        DBDEV: "true"
+        SWAGGER: "true"
     depends_on:
       - postgres
     networks:
       - app_network
 
   postgres:
-    image: postgres:latest
+    image: postgres
     container_name: postgres_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: adm-company-hml
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "1234"
+      POSTGRES_DB: "adm-company-hml"
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
