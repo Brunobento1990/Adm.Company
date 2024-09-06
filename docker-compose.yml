@@ -4,35 +4,165 @@ services:
   api:
     image: brunobentocaina/adm-company-api:latest
     container_name: adm-company-api
+    restart: always
     ports:
-      - "5022:8080"
+      - "8080:8080"
     environment:
-        URL_API_WHATSS: "http://localhost:8074"
-        WHATS_API_KEY: "11eb9679"
+        URL_API_WHATSS: "http://192.168.1.124:3045"
+        WHATS_API_KEY: "42e340ee-c6a7-44de-b368-284796260c6f"
         ORIGIN: "http://localhost:8477"
-        CONNECTION_STRING : "User ID=postgres; Password=1234; Host=postgres_db; Port=5432; Database=adm-company-hml; Pooling=true;"
-        JWT_KEY: "bce00242441ba1650f3e"
+        CONNECTION_STRING : "User ID=postgres; Password=1234; Host=192.168.1.124; Port=4449; Database=adm-company-hml; Pooling=true;"
+        JWT_KEY: "14ab4ee6-d83f-43a6-99e0-04a2dc44888f"
         JWT_ISSUE: "ISSUE"
         JWT_AUDIENCE: "ADMCOMPANYAUDIENCE"
         JWT_EXPIRATION: "24"
         DBDEV: "true"
         SWAGGER: "true"
     depends_on:
-      - postgres
+      - api-evolution
     networks:
       - app_network
 
-  postgres:
-    image: postgres
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "1234"
-      POSTGRES_DB: "adm-company-hml"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+  api-evolution:
+    container_name: evolution-api-dev
+    image: atendai/evolution-api:v2.0.10
+    restart: always
     ports:
-      - "4450:5432"
+      - 3045:8080
+    environment:
+      SERVER_TYPE: "http"
+      SERVER_PORT: "8080"
+      SERVER_URL: "http://localhost:8080"
+      CORS_ORIGIN: "*"
+      CORS_METHODS: "GET,POST,PUT,DELETE"
+      CORS_CREDENTIALS: "true"
+      LOG_LEVEL: "ERROR,WARN,DEBUG,INFO,LOG,DARK,WEBHOOKS,WEBSOCKET"
+      LOG_COLOR: "true"
+      LOG_BAILEYS: "error"
+      DEL_INSTANCE: "false"
+      DATABASE_PROVIDER: "postgresql"
+      DATABASE_CONNECTION_URI: "postgresql://postgres:1234@192.168.1.124:4449/evolution?schema=public"
+      DATABASE_CONNECTION_CLIENT_NAME: "evolution_exchange"
+      DATABASE_SAVE_DATA_INSTANCE: "true"
+      DATABASE_SAVE_DATA_NEW_MESSAGE: "true"
+      DATABASE_SAVE_MESSAGE_UPDATE: "true"
+      DATABASE_SAVE_DATA_CONTACTS: "true"
+      DATABASE_SAVE_DATA_CHATS: "true"
+      DATABASE_SAVE_DATA_LABELS: "true"
+      DATABASE_SAVE_DATA_HISTORIC: "true"
+      DATABASE_SAVE_IS_ON_WHATSAPP: "true"
+      DATABASE_SAVE_IS_ON_WHATSAPP_DAYS: "7"
+      RABBITMQ_ENABLED: "false"
+      RABBITMQ_URI: "amqp://localhost"
+      RABBITMQ_EXCHANGE_NAME: "evolution"
+      RABBITMQ_GLOBAL_ENABLED: "false"
+      RABBITMQ_EVENTS_APPLICATION_STARTUP: "false"
+      RABBITMQ_EVENTS_INSTANCE_CREATE: "false"
+      RABBITMQ_EVENTS_INSTANCE_DELETE: "false"
+      RABBITMQ_EVENTS_QRCODE_UPDATED: "false"
+      RABBITMQ_EVENTS_MESSAGES_SET: "false"
+      RABBITMQ_EVENTS_MESSAGES_UPSERT: "false"
+      RABBITMQ_EVENTS_MESSAGES_EDITED: "false"
+      RABBITMQ_EVENTS_MESSAGES_UPDATE: "false"
+      RABBITMQ_EVENTS_MESSAGES_DELETE: "false"
+      RABBITMQ_EVENTS_SEND_MESSAGE: "false"
+      RABBITMQ_EVENTS_CONTACTS_SET: "false"
+      RABBITMQ_EVENTS_CONTACTS_UPSERT: "false"
+      RABBITMQ_EVENTS_CONTACTS_UPDATE: "false"
+      RABBITMQ_EVENTS_PRESENCE_UPDATE: "false"
+      RABBITMQ_EVENTS_CHATS_SET: "false"
+      RABBITMQ_EVENTS_CHATS_UPSERT: "false"
+      RABBITMQ_EVENTS_CHATS_UPDATE: "false"
+      RABBITMQ_EVENTS_CHATS_DELETE: "false"
+      RABBITMQ_EVENTS_GROUPS_UPSERT: "false"
+      RABBITMQ_EVENTS_GROUP_UPDATE: "false"
+      RABBITMQ_EVENTS_GROUP_PARTICIPANTS_UPDATE: "false"
+      RABBITMQ_EVENTS_CONNECTION_UPDATE: "false"
+      RABBITMQ_EVENTS_REMOVE_INSTANCE: "false"
+      RABBITMQ_EVENTS_LOGOUT_INSTANCE: "false"
+      RABBITMQ_EVENTS_CALL: "false"
+      RABBITMQ_EVENTS_TYPEBOT_START: "false"
+      RABBITMQ_EVENTS_TYPEBOT_CHANGE_STATUS: "false"
+      SQS_ENABLED: "false"
+      WEBSOCKET_ENABLED: "false"
+      WEBSOCKET_GLOBAL_EVENTS: "false"
+      WA_BUSINESS_TOKEN_WEBHOOK: "evolution"
+      WA_BUSINESS_URL: "https://graph.facebook.com"
+      WA_BUSINESS_VERSION: "v20.0"
+      WA_BUSINESS_LANGUAGE: "en_US"
+      WEBHOOK_GLOBAL_ENABLED: "true"
+      WEBHOOK_GLOBAL_URL: 'http://adm-company-api:8080'
+      WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS: "true"
+      WEBHOOK_EVENTS_APPLICATION_STARTUP: "false"
+      WEBHOOK_EVENTS_QRCODE_UPDATED: "true"
+      WEBHOOK_EVENTS_MESSAGES_SET: "true"
+      WEBHOOK_EVENTS_MESSAGES_UPSERT: "true"
+      WEBHOOK_EVENTS_MESSAGES_EDITED: "true"
+      WEBHOOK_EVENTS_MESSAGES_UPDATE: "true"
+      WEBHOOK_EVENTS_MESSAGES_DELETE: "true"
+      WEBHOOK_EVENTS_SEND_MESSAGE: "true"
+      WEBHOOK_EVENTS_CONTACTS_SET: "true"
+      WEBHOOK_EVENTS_CONTACTS_UPSERT: "true"
+      WEBHOOK_EVENTS_CONTACTS_UPDATE: "true"
+      WEBHOOK_EVENTS_PRESENCE_UPDATE: "true"
+      WEBHOOK_EVENTS_CHATS_SET: "true"
+      WEBHOOK_EVENTS_CHATS_UPSERT: "true"
+      WEBHOOK_EVENTS_CHATS_UPDATE: "true"
+      WEBHOOK_EVENTS_CHATS_DELETE: "true"
+      WEBHOOK_EVENTS_GROUPS_UPSERT: "true"
+      WEBHOOK_EVENTS_GROUPS_UPDATE: "true"
+      WEBHOOK_EVENTS_GROUP_PARTICIPANTS_UPDATE: "true"
+      WEBHOOK_EVENTS_CONNECTION_UPDATE: "true"
+      WEBHOOK_EVENTS_REMOVE_INSTANCE: "false"
+      WEBHOOK_EVENTS_LOGOUT_INSTANCE: "false"
+      WEBHOOK_EVENTS_LABELS_EDIT: "true"
+      WEBHOOK_EVENTS_LABELS_ASSOCIATION: "true"
+      WEBHOOK_EVENTS_CALL: "true"
+      WEBHOOK_EVENTS_TYPEBOT_START: "false"
+      WEBHOOK_EVENTS_TYPEBOT_CHANGE_STATUS: "false"
+      WEBHOOK_EVENTS_ERRORS: "false"
+      WEBHOOK_EVENTS_ERRORS_WEBHOOK: 
+      CONFIG_SESSION_PHONE_CLIENT: "Evolution API"
+      CONFIG_SESSION_PHONE_NAME: "Chrome"
+      CONFIG_SESSION_PHONE_VERSION: "2.3000.1015901307"
+      QRCODE_LIMIT: "30"
+      QRCODE_COLOR: "#175197"
+      TYPEBOT_ENABLED: "false"
+      TYPEBOT_API_VERSION: latest
+      CHATWOOT_ENABLED: "false"
+      CHATWOOT_MESSAGE_READ: "true"
+      CHATWOOT_MESSAGE_DELETE: "true"
+      CHATWOOT_BOT_CONTACT: "true"
+      CHATWOOT_IMPORT_DATABASE_CONNECTION_URI: "postgresql://user:passwprd@host:5432/chatwoot?sslmode=disable"
+      CHATWOOT_IMPORT_PLACEHOLDER_MEDIA_MESSAGE: "true"
+      OPENAI_ENABLED: "false"
+      DIFY_ENABLED: "false"
+      CACHE_REDIS_ENABLED: "false"
+      CACHE_REDIS_URI: "redis://localhost:6379/6"
+      CACHE_REDIS_TTL: "604800"
+      CACHE_REDIS_PREFIX_KEY: "evolution"
+      CACHE_REDIS_SAVE_INSTANCES: "false"
+      CACHE_LOCAL_ENABLED: "false"
+      S3_ENABLED: "false"
+      S3_BUCKET: "evolution"
+      S3_PORT: "443"
+      S3_ENDPOINT: "s3.domain.com"
+      S3_REGION: "eu-west-3"
+      S3_USE_SSL: "true"
+      AUTHENTICATION_API_KEY: "42e340ee-c6a7-44de-b368-284796260c6f"
+      AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: "true"
+      LANGUAGE: "en"
+    networks:
+      - app_network
+
+  front:
+    image: brunobentocaina/adm-company-ui:latest
+    container_name: adm-company-ui
+    restart: always
+    ports:
+      - "8477:8477"
+    depends_on:
+      - api
     networks:
       - app_network
 

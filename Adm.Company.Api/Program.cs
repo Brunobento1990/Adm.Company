@@ -13,7 +13,7 @@ DotEnv.Load();
 
 var apiKeyWhats = VariaveisDeAmbiente.GetVariavel("WHATS_API_KEY");
 var urlWhats = VariaveisDeAmbiente.GetVariavel("URL_API_WHATSS");
-var origin = VariaveisDeAmbiente.GetVariavel("ORIGIN");
+var origin = new[] { VariaveisDeAmbiente.GetVariavel("ORIGIN1"), VariaveisDeAmbiente.GetVariavel("ORIGIN2") };
 var connectionStringDb = VariaveisDeAmbiente.GetVariavel("CONNECTION_STRING");
 var keyJwt = VariaveisDeAmbiente.GetVariavel("JWT_KEY");
 var issue = VariaveisDeAmbiente.GetVariavel("JWT_ISSUE");

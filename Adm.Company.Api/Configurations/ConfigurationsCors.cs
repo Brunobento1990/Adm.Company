@@ -2,7 +2,7 @@
 
 public static class ConfigurationsCors
 {
-    public static IServiceCollection InjectCors(this IServiceCollection services, string origin)
+    public static IServiceCollection InjectCors(this IServiceCollection services, string[] origin)
     {
         services.AddCors(options =>
         {
